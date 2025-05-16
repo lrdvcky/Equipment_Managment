@@ -1,15 +1,13 @@
-<?php 
-?>
+<?php ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Пользователи | Учёт оборудования</title>
+    <title>Пользователи | Админ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
 <div class="wrapper">
 
     <header>
@@ -31,10 +29,10 @@
     </nav>
 
     <main>
-        <h2 class="highlight">Пользователи системы</h2>
+        <h2 class="highlight">Список пользователей</h2>
 
         <div class="equipment-controls">
-            <input type="text" placeholder="Поиск по фамилии, роли или логину">
+            <input type="text" placeholder="Поиск по фамилии, логину...">
             <button class="red-button">Добавить пользователя</button>
         </div>
 
@@ -42,29 +40,37 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Логин</th>
                         <th>Роль</th>
                         <th>ФИО</th>
-                        <th>Телефон</th>
                         <th>Email</th>
+                        <th>Телефон</th>
+                        <th>Адрес</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Пример строки -->
                     <tr>
-                        <td>1</td>
-                        <td>basalaev</td>
-                        <td>Администратор</td>
-                        <td>Басалаев Александр Иванович</td>
-                        <td>89123456789</td>
-                        <td>ivanov@mail.ru</td>
-                        <td><a href="#">Редактировать</a> | <a href="#">Удалить</a></td>
+                        <td>suslonova</td>
+                        <td>Преподаватель</td>
+                        <td>Суслонова Мария Лазаревна</td>
+                        <td>petrova@mail.ru</td>
+                        <td>89234567890</td>
+                        <td>г. Пермь, ул. Ленина, д.10</td>
+                        <td class="table-actions">
+                            <a href="#">Редактировать</a>
+                            <a href="#">Удалить</a>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <p style="margin-top: 30px; font-size: 14px; color: #555;">
+            * Обязательные поля при добавлении: логин, пароль, фамилия.<br>
+            * Проверка: поля должны быть валидны (например, телефон — только цифры).<br>
+            * Нельзя удалить пользователя, связанного с другими модулями — система выдаст предупреждение.
+        </p>
     </main>
 
     <footer>
@@ -72,6 +78,5 @@
     </footer>
 
 </div>
-
 </body>
 </html>

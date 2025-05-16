@@ -1,15 +1,13 @@
-<?php 
-?>
+<?php ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Оборудование | Учёт оборудования</title>
+    <title>Оборудование | Админ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
 <div class="wrapper">
 
     <header>
@@ -31,44 +29,57 @@
     </nav>
 
     <main>
-        <h2 class="highlight">Учёт оборудования</h2>
+        <h2 class="highlight">Список оборудования</h2>
 
         <div class="equipment-controls">
-            <input type="text" placeholder="Поиск по наименованию или инвентарному номеру">
+            <input type="text" placeholder="Поиск по названию...">
             <button class="red-button">Добавить оборудование</button>
         </div>
 
         <div class="equipment-table">
             <table>
                 <thead>
-    <tr>
-        <th>ID</th>
-        <th>Фото</th>
-        <th>Наименование</th>
-        <th>Инв. №</th>
-        <th>Аудитория</th>
-        <th>Статус</th>
-        <th>Модель</th>
-        <th>Ответственный</th>
-        <th>Действия</th>
-    </tr>
-</thead>
-<tbody>
-    <tr>
-        <td>4</td>
-        <td><img src="img/equipment-placeholder.jpg" alt="Фото" class="equipment-photo"></td>
-        <td>Монитор Samsung</td>
-        <td>INV001</td>
-        <td>Ауд. 422</td>
-        <td>В эксплуатации</td>
-        <td>S24F350</td>
-        <td>Иванов И.И.</td>
-        <td><a href="#">Редактировать</a> | <a href="#">Удалить</a></td>
-    </tr>
-</tbody>
-
+                    <tr>
+                        <th>Фото</th>
+                        <th>Название</th>
+                        <th>Инв. номер</th>
+                        <th>Аудитория</th>
+                        <th>Ответственный</th>
+                        <th>Вр. ответственный</th>
+                        <th>Стоимость</th>
+                        <th>Направление</th>
+                        <th>Статус</th>
+                        <th>Модель</th>
+                        <th>Комментарий</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><img src="../img/sample.png" alt="фото" style="height: 40px;"></td>
+                        <td>ПК Lenovo</td>
+                        <td>INV002</td>
+                        <td>Ауд.502</td>
+                        <td>Суслонова</td>
+                        <td>Субботина</td>
+                        <td>35000 ₽</td>
+                        <td>Программирование</td>
+                        <td>Используется</td>
+                        <td>Lenovo M720</td>
+                        <td>Основной ПК</td>
+                        <td class="table-actions">
+                            <a href="#">Редактировать</a>
+                            <a href="#">Удалить</a>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
+
+        <p style="margin-top: 30px; font-size: 14px; color: #555;">
+            * При удалении оборудования, связанного с другими модулями, будет показано предупреждение.<br>
+            * Инвентарный номер и название обязательны. Проверка: только цифры в номере, только цифры в стоимости.
+        </p>
     </main>
 
     <footer>
@@ -76,6 +87,5 @@
     </footer>
 
 </div>
-
 </body>
 </html>

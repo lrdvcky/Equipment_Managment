@@ -1,15 +1,13 @@
-<?php 
-?>
+<?php ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Аудитории | Учёт оборудования</title>
+    <title>Аудитории | Админ</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-
 <div class="wrapper">
 
     <header>
@@ -23,7 +21,7 @@
         <a href="index.php">Главная</a>
         <a href="equipment.php">Оборудование</a>
         <a href="users.php">Пользователи</a>
-        <a href="rooms.php">Аудитории</a>
+        <a href="rooms.php" class="active">Аудитории</a>
         <a href="software.php">Программы</a>
         <a href="inventory.php">Инвентаризация</a>
         <a href="consumables.php">Расходники</a>
@@ -34,7 +32,7 @@
         <h2 class="highlight">Учёт аудиторий</h2>
 
         <div class="equipment-controls">
-            <input type="text" placeholder="Поиск по названию или номеру аудитории">
+            <input type="text" placeholder="Поиск по наименованию...">
             <button class="red-button">Добавить аудиторию</button>
         </div>
 
@@ -42,9 +40,8 @@
             <table>
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Наименование</th>
-                        <th>Сокращённое</th>
+                        <th>Полное наименование</th>
+                        <th>Сокращение</th>
                         <th>Ответственный</th>
                         <th>Временно ответственный</th>
                         <th>Действия</th>
@@ -52,11 +49,10 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>1</td>
-                        <td>Аудитория 422</td>
-                        <td>Ауд.422</td>
-                        <td>Басалаев А.И.</td>
-                        <td>Суслонова М.Л.</td>
+                        <td>Аудитория 502</td>
+                        <td>Ауд.502</td>
+                        <td>Суслонова</td>
+                        <td>Субботина</td>
                         <td class="table-actions">
                             <a href="#">Редактировать</a>
                             <a href="#">Удалить</a>
@@ -65,6 +61,11 @@
                 </tbody>
             </table>
         </div>
+
+        <p style="margin-top: 30px; font-size: 14px; color: #555;">
+            * Поле "наименование" обязательно для заполнения.<br>
+            * При удалении аудитории, связанной с другим оборудованием — система уведомит пользователя.
+        </p>
     </main>
 
     <footer>
@@ -72,6 +73,5 @@
     </footer>
 
 </div>
-
 </body>
 </html>
