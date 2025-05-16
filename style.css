@@ -181,3 +181,111 @@ footer {
     border: 1px solid var(--gray);
     border-radius: 4px;
 }
+.equipment-controls button,
+.auth-form button,
+.user-controls button {
+    align-self: center;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+}
+/* Обертка для адаптивного скроллинга таблицы */
+.equipment-table,
+.user-table {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.equipment-table table,
+.user-table table {
+    width: 100%;
+    min-width: 700px; /* Можно адаптировать под ширину колонок */
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+/* Убираем смещение */
+main {
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+@media screen and (min-width: 720px) and (max-width: 1200px) {
+
+    .wrapper {
+        padding: 0 15px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+        font-size: 15px;
+        justify-content: center;
+    }
+
+    nav a {
+        font-size: 15px;
+        padding: 8px 10px;
+    }
+
+    main {
+        padding: 20px 10px;
+    }
+
+    h1, h2 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .logo {
+        height: 40px;
+    }
+
+    .equipment-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .equipment-controls input,
+    .equipment-controls button,
+    .auth-form input,
+    .auth-form button,
+    .user-controls input,
+    .user-controls button {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+
+    .module-button {
+        font-size: 15px;
+        padding: 10px;
+        max-width: 100%;
+    }
+
+    .equipment-table table,
+    .user-table table {
+        display: block;
+        overflow-x: auto;
+        width: 100%;
+        white-space: nowrap;
+    }
+
+    .equipment-table th,
+    .equipment-table td,
+    .user-table th,
+    .user-table td {
+        font-size: 14px;
+        padding: 8px;
+    }
+}
+
