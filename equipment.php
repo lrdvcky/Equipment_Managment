@@ -21,11 +21,13 @@
 
     <nav>
         <a href="index.php">Главная</a>
-        <a href="equipment.php" class="active">Оборудование</a>
-        <a href="#">Пользователи</a>
-        <a href="#">Программы</a>
-        <a href="#">Инвентаризация</a>
-        <a href="#">Расходники</a>
+        <a href="equipment.php">Оборудование</a>
+        <a href="users.php">Пользователи</a>
+        <a href="rooms.php">Аудитории</a>
+        <a href="software.php">Программы</a>
+        <a href="inventory.php">Инвентаризация</a>
+        <a href="consumables.php">Расходники</a>
+        <a href="network.php">Сетевые настройки</a>
     </nav>
 
     <main>

@@ -23,10 +23,11 @@
         <a href="index.php">Главная</a>
         <a href="equipment.php">Оборудование</a>
         <a href="users.php">Пользователи</a>
+        <a href="rooms.php">Аудитории</a>
         <a href="software.php">Программы</a>
         <a href="inventory.php">Инвентаризация</a>
         <a href="consumables.php">Расходники</a>
-        <a href="rooms.php" class="active">Аудитории</a>
+        <a href="network.php">Сетевые настройки</a>
     </nav>
 
     <main>

@@ -173,3 +173,11 @@ footer {
 .table-actions a:hover {
     color: var(--red);
 }
+.auth-form input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 16px;
+    border: 1px solid var(--gray);
+    border-radius: 4px;
+}
