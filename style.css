@@ -212,10 +212,6 @@ main {
 
 @media screen and (min-width: 720px) and (max-width: 1200px) {
 
-    .wrapper {
-        padding: 0 15px;
-    }
-
     .header-content {
         flex-direction: column;
         gap: 10px;
@@ -237,6 +233,7 @@ main {
 
     main {
         padding: 20px 10px;
+        margin: 0;
     }
 
     h1, h2 {
@@ -274,7 +271,6 @@ main {
 
     .equipment-table table,
     .user-table table {
-        display: block;
         overflow-x: auto;
         width: 100%;
         white-space: nowrap;
