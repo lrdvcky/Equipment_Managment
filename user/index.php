@@ -13,16 +13,17 @@
     <header>
         <div class="header-content">
             <img src="../img/logo.png" alt="Логотип" class="logo">
-            <h1>Личный кабинет пользователя</h1>
+            <h1>Главная</h1>
+            <button class="burger" onclick="toggleMenu()">☰</button>
         </div>
-    </header>
 
-    <nav>
-        <a href="index.php" class="active">Главная</a>
+    <nav id="mobileMenu">
+        <a href="index.php">Главная</a>
         <a href="equipment.php">Моё оборудование</a>
         <a href="inventory.php">Инвентаризация</a>
-        <a href="profile.php">Профиль</a>
+        <a href="profile.php" class="active">Профиль</a>
     </nav>
+</header>
 
     <main style="text-align: center;">
         <h2 class="highlight">Добро пожаловать!</h2>
@@ -34,6 +35,11 @@
     </footer>
 
 </div>
-
+<script>
+    function toggleMenu() {
+        const nav = document.getElementById('mobileMenu');
+        nav.classList.toggle('open');
+    }
+</script>
 </body>
 </html>

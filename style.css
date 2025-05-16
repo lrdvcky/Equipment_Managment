@@ -209,9 +209,16 @@ main {
     padding: 20px;
     overflow-x: hidden;
 }
-
+.burger {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: white;
+    cursor: pointer;
+}
 @media screen and (min-width: 720px) and (max-width: 1200px) {
-
+    
     .header-content {
         flex-direction: column;
         gap: 10px;
@@ -283,5 +290,117 @@ main {
         font-size: 14px;
         padding: 8px;
     }
+   
+}
+@media screen and (min-width: 320px) and (max-width: 720px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .logo {
+        height: 35px;
+    }
+
+    h1, h2 {
+        font-size: 18px;
+        text-align: center;
+    }
+
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    nav a {
+        padding: 6px 10px;
+    }
+
+    main {
+        padding: 15px 5px;
+    }
+
+    .equipment-controls,
+    .user-controls,
+    .auth-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .equipment-controls input,
+    .equipment-controls button,
+    .user-controls input,
+    .user-controls button,
+    .auth-form input,
+    .auth-form button {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .equipment-table,
+    .user-table {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .equipment-table table,
+    .user-table table {
+        width: 100%;
+        min-width: 600px;
+        font-size: 13px;
+        margin: 0 auto;
+    }
+
+    .equipment-table th,
+    .equipment-table td,
+    .user-table th,
+    .user-table td {
+        padding: 6px;
+    }
+
+    .module-button {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    footer {
+        font-size: 13px;
+        padding: 8px;
+    }
+    .burger {
+        display: block;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+    }
+
+    nav {
+        display: none;
+        flex-direction: column;
+        background-color: white;
+        width: 100%;
+        text-align: center;
+        border-top: 1px solid var(--gray);
+    }
+
+    nav.open {
+        display: flex;
+    }
+
+    nav a {
+        padding: 12px 0;
+        border-bottom: 1px solid var(--gray);
+    }
+
+    .header-content {
+        position: relative;
+        align-items: center;
+    }
+    
 }
 

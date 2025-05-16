@@ -16,11 +16,9 @@
     <div class="header-content">
         <img src="../img/logo.png" alt="Логотип" class="logo">
         <h1>Система учёта оборудования</h1>
+        <button class="burger" onclick="toggleMenu()">☰</button>
     </div>
-</header>
-
-
-    <nav>
+    <nav id="mobileMenu">
         <a href="index.php">Главная</a>
         <a href="equipment.php">Оборудование</a>
         <a href="users.php">Пользователи</a>
@@ -30,7 +28,7 @@
         <a href="consumables.php">Расходники</a>
         <a href="network.php">Сетевые настройки</a>
     </nav>
-
+</header>
     <main>
     <h2 class="highlight">Добро пожаловать!</h2>
     <p>Это информационная система, предназначенная для управления данными, связанными с учебным оборудованием.</p>
@@ -59,6 +57,12 @@
     </footer>
 
 </div>
+<script>
+    function toggleMenu() {
+        const nav = document.getElementById('mobileMenu');
+        nav.classList.toggle('open');
+    }
+</script>
 
 </body>
 </html>

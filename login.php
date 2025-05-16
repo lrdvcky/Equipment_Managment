@@ -17,11 +17,12 @@
 <div class="wrapper">
 
     <header>
-        <div class="header-content">
-            <img src="img/logo.png" alt="Логотип" class="logo">
-            <h1>Система учёта оборудования</h1>
-        </div>
-    </header>
+    <div class="header-content">
+        <img src="../img/logo.png" alt="Логотип" class="logo">
+        <h1>Система учёта оборудования</h1>
+        <button class="burger" onclick="toggleMenu()">☰</button>
+    </div>
+</header>
 
     <main style="max-width: 400px; margin: 0 auto;">
         <h2 class="highlight">Вход в систему</h2>
@@ -43,6 +44,11 @@
     </footer>
 
 </div>
-
+<script>
+    function toggleMenu() {
+        const nav = document.getElementById('mobileMenu');
+        nav.classList.toggle('open');
+    }
+</script>
 </body>
 </html>

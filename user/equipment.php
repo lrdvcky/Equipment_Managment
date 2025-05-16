@@ -12,16 +12,17 @@
     <header>
         <div class="header-content">
             <img src="../img/logo.png" alt="Логотип" class="logo">
-            <h1>Моё оборудование</h1>
+            <h1>Мое оборудование</h1>
+            <button class="burger" onclick="toggleMenu()">☰</button>
         </div>
-    </header>
 
-    <nav>
+    <nav id="mobileMenu">
         <a href="index.php">Главная</a>
-        <a href="equipment.php" class="active">Моё оборудование</a>
+        <a href="equipment.php">Моё оборудование</a>
         <a href="inventory.php">Инвентаризация</a>
-        <a href="profile.php">Профиль</a>
+        <a href="profile.php" class="active">Профиль</a>
     </nav>
+</header>
 
     <main>
         <h2 class="highlight">Закреплённое за вами оборудование</h2>
@@ -51,5 +52,11 @@
         &copy; 2025 Учебное заведение. Все права защищены.
     </footer>
 </div>
+<script>
+    function toggleMenu() {
+        const nav = document.getElementById('mobileMenu');
+        nav.classList.toggle('open');
+    }
+</script>
 </body>
 </html>
