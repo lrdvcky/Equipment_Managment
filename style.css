@@ -26,7 +26,6 @@ body {
 header {
     background-color: var(--dark);
     color: var(--white);
-    padding: 20px;
     text-align: center;
 }
 
@@ -322,6 +321,7 @@ main {
 
     main {
         padding: 15px 5px;
+        margin: 0;
     }
 
     .equipment-controls,
@@ -331,17 +331,6 @@ main {
         align-items: stretch;
         gap: 12px;
     }
-
-    .equipment-controls input,
-    .equipment-controls button,
-    .user-controls input,
-    .user-controls button,
-    .auth-form input,
-    .auth-form button {
-        width: 100%;
-        font-size: 14px;
-    }
-
     .equipment-table,
     .user-table {
         overflow-x: auto;
