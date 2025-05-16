@@ -21,8 +21,9 @@
 
     <nav>
         <a href="index.php">Главная</a>
-        <a href="#">Оборудование</a>
-        <a href="#">Пользователи</a>
+        <a href="equipment.php">Оборудование</a>
+        <a href="users.php">Пользователи</a>
+        <a href="rooms.php">Аудитории</a>
         <a href="#">Программы</a>
         <a href="#">Инвентаризация</a>
         <a href="#">Расходники</a>
@@ -31,7 +32,8 @@
     <main>
         <h2 class="highlight">Выберите модуль</h2>
         <div class="modules-list">
-            <a href="#" class="module-button">Оборудование</a>
+            <a href="equipment.php" class="module-button">Оборудование</a>
+            <a href="rooms.php" class="module-button">Аудитории</a>
             <a href="#" class="module-button">Пользователи</a>
             <a href="#" class="module-button">Программы</a>
             <a href="#" class="module-button">Инвентаризация</a>
