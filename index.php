@@ -1,3 +1,6 @@
+<?php 
+?>
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -41,3 +44,6 @@
 
 </body>
 </html>
+=======
+test commit
+>>>>>>> 6c625afc755d61bc115c3980e206d8bf18b7689a
