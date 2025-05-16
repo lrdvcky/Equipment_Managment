@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Инвентаризация | Учёт оборудования</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 
@@ -14,7 +14,7 @@
 
     <header>
         <div class="header-content">
-            <img src="img/logo.png" alt="Логотип" class="logo">
+            <img src="../img/logo.png" alt="Логотип" class="logo">
             <h1>Система учёта оборудования</h1>
         </div>
     </header>
