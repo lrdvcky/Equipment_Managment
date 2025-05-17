@@ -12,23 +12,33 @@ class Equipment {
     public ?string $comment;
     public ?string $direction_name;
     public ?string $status;
+
+    public function __construct(
+        int $id,
+        string $name,
+        ?string $photo,
+        string $inventory_number,
+        ?int $room_id,
+        ?int $responsible_user_id,
+        ?int $temporary_responsible_user_id,
+        ?float $price,
+        ?int $model_id,
+        ?string $comment,
+        ?string $direction_name,
+        ?string $status
+    ) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->photo = $photo;
+        $this->inventory_number = $inventory_number;
+        $this->room_id = $room_id;
+        $this->responsible_user_id = $responsible_user_id;
+        $this->temporary_responsible_user_id = $temporary_responsible_user_id;
+        $this->price = $price;
+        $this->model_id = $model_id;
+        $this->comment = $comment;
+        $this->direction_name = $direction_name;
+        $this->status = $status;
+    }
 }
-
-// Пример данных
-$equipmentList = [];
-
-$item1 = new Equipment();
-$item1->id = 1;
-$item1->name = "ПК Lenovo";
-$item1->photo = null;
-$item1->inventory_number = "INV002";
-$item1->room_id = 2;
-$item1->responsible_user_id = 2;
-$item1->temporary_responsible_user_id = 3;
-$item1->price = 35000.00;
-$item1->model_id = 2;
-$item1->comment = "Рабочий компьютер преподавателя";
-$item1->direction_name = "Программирование";
-$item1->status = "В эксплуатации";
-
-$equipmentList[] = $item1;
+?>
