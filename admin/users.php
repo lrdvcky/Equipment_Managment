@@ -2,6 +2,31 @@
 require_once '../connection.php';
 require_once '../models/User.php';
 require_once '../models/UsersContext.php';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action'])) {
+        switch ($_POST['action']) {
+            case 'add':
+                UsersContext::addUser(new Users(
+                    0, $_POST['username'], $_POST['password'], $_POST['role'],
+                    $_POST['email'], $_POST['last_name'], $_POST['first_name'],
+                    $_POST['middle_name'], $_POST['phone'], $_POST['address']
+                ));
+                break;
+            case 'update':
+                UsersContext::updateUser(new Users(
+                    $_POST['id'], $_POST['username'], $_POST['password'], $_POST['role'],
+                    $_POST['email'], $_POST['last_name'], $_POST['first_name'],
+                    $_POST['middle_name'], $_POST['phone'], $_POST['address']
+                ));
+                break;
+            case 'delete':
+                UsersContext::deleteUser($_POST['id']);
+                break;
+        }
+        header('Location: users.php');
+        exit();
+    }
+}
 
 $users = UsersContext::getAllUsers();
 ?>
