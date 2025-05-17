@@ -1,4 +1,11 @@
-<?php ?>
+<?php
+require_once '../connection.php';
+require_once '../models/User.php';
+require_once '../models/UsersContext.php';
+
+$users = UsersContext::getAllUsers();
+?>
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -50,18 +57,21 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>suslonova</td>
-                        <td>Преподаватель</td>
-                        <td>Суслонова Мария Лазаревна</td>
-                        <td>petrova@mail.ru</td>
-                        <td>89234567890</td>
-                        <td>г. Пермь, ул. Ленина, д.10</td>
-                        <td class="table-actions">
-                            <a href="#">Редактировать</a>
-                            <a href="#">Удалить</a>
-                        </td>
-                    </tr>
+                    <?php foreach ($users as $user): ?>
+<tr>
+    <td><?= htmlspecialchars($user->username) ?></td>
+    <td><?= htmlspecialchars($user->role) ?></td>
+    <td><?= htmlspecialchars($user->last_name . ' ' . $user->first_name . ' ' . $user->middle_name) ?></td>
+    <td><?= htmlspecialchars($user->email) ?></td>
+    <td><?= htmlspecialchars($user->phone) ?></td>
+    <td><?= htmlspecialchars($user->address) ?></td>
+    <td class="table-actions">
+        <a href="#">Редактировать</a>
+        <a href="#">Удалить</a>
+    </td>
+</tr>
+<?php endforeach; ?>
+
                 </tbody>
             </table>
         </div>
