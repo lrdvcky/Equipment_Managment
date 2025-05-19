@@ -1,6 +1,8 @@
 <?php
 require_once '../admin/users.php';
 require_once '../connection.php';
+require_once 'User.php';
+require_once '../controllers/UserController.php';
 
 class UsersContext {
     public static function getAllUsers(): array {
@@ -10,7 +12,7 @@ class UsersContext {
         $result = $conn->query($sql);
 
         while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $users[] = new Users(
+            $users[] = new User(
                 $row['id'],
                 $row['username'],
                 $row['password'],

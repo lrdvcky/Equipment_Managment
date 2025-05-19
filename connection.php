@@ -1,7 +1,7 @@
 <?php
 function OpenConnection() {
     $host = '127.0.0.1';
-    $dbname = 'equipment_management';
+    $dbname = 'equipment_managment';
     $username = 'root';
     $password = '';
 

@@ -2,6 +2,12 @@
 require_once '../connection.php';
 require_once '../models/User.php';
 require_once '../models/UsersContext.php';
+require_once '../controllers/UserController.php';
+
+UserController::handleRequest(); // Теперь контроллер обрабатывает действия
+
+$users = UsersContext::getAllUsers();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {

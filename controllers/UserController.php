@@ -4,45 +4,36 @@ require_once '../models/User.php';
 require_once '../models/UsersContext.php';
 
 class UserController {
+    public static function handleRequest() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+            $user = new Users(
+                $_POST['id'] ?? 0,
+                $_POST['username'],
+                $_POST['password'],
+                $_POST['role'],
+                $_POST['email'],
+                $_POST['last_name'],
+                $_POST['first_name'],
+                $_POST['middle_name'],
+                $_POST['phone'],
+                $_POST['address']
+            );
 
-    public static function index(): array {
-        return UsersContext::getAllUsers();
-    }
+            switch ($_POST['action']) {
+                case 'add':
+                    UsersContext::addUser($user);
+                    break;
+                case 'update':
+                    UsersContext::updateUser($user);
+                    break;
+                case 'delete':
+                    UsersContext::deleteUser($user->id);
+                    break;
+            }
 
-    public static function store(array $data): bool {
-        $user = new User(
-            0,
-            $data['username'],
-            $data['password'],
-            $data['role'],
-            $data['email'] ?? null,
-            $data['last_name'],
-            $data['first_name'],
-            $data['middle_name'] ?? null,
-            $data['phone'] ?? null,
-            $data['address'] ?? null
-        );
-        return UsersContext::addUser($user);
-    }
-
-    public static function update(int $id, array $data): bool {
-        $user = new User(
-            $id,
-            $data['username'],
-            $data['password'],
-            $data['role'],
-            $data['email'] ?? null,
-            $data['last_name'],
-            $data['first_name'],
-            $data['middle_name'] ?? null,
-            $data['phone'] ?? null,
-            $data['address'] ?? null
-        );
-        return UsersContext::updateUser($user);
-    }
-
-    public static function destroy(int $id): bool {
-        return UsersContext::deleteUser($id);
+            header('Location: users.php');
+            exit();
+        }
     }
 }
 ?>
