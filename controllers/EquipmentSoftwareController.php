@@ -17,6 +17,7 @@ class EquipmentSoftwareController {
         return EquipmentSoftwareContext::add($relation);
     }
 
+    public static function update(array $oldData, array $newData): bool {
         $old = new EquipmentSoftware($oldData['equipment_id'], $oldData['software_id']);
         $new = new EquipmentSoftware($newData['equipment_id'], $newData['software_id']);
         return EquipmentSoftwareContext::update($old, $new);
