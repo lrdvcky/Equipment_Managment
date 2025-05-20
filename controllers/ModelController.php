@@ -1,6 +1,6 @@
 <?php
 require_once '../connection.php';
-require_once '../models/Model.php';
+require_once '../models/model.php';
 require_once '../models/ModelContext.php';
 
 class ModelController {

@@ -1,36 +1,21 @@
 <?php
-require_once '../connection.php';
-require_once '../models/Software.php';
-require_once '../models/SoftwareContext.php';
 
-class SoftwareController {
+require_once __DIR__ . '/../connection.php';
+require_once __DIR__ . '/../models/SoftwareContext.php';
 
-    public static function index(): array {
-        return SoftwareContext::getAll();
+header('Content-Type: application/json; charset=utf-8');
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get') {
+        $arr = SoftwareContext::getAll();
+        // Преобразуем объекты в массивы
+        $out = array_map(fn($s) => get_object_vars($s), $arr);
+        echo json_encode($out, JSON_UNESCAPED_UNICODE);
+        exit;
     }
-
-    public static function store(array $data): bool {
-        $software = new Software(
-            0,
-            $data['name'],
-            $data['version'] ?? null,
-            $data['developer_name'] ?? null
-        );
-        return SoftwareContext::add($software);
-    }
-
-    public static function update(int $id, array $data): bool {
-        $software = new Software(
-            $id,
-            $data['name'],
-            $data['version'] ?? null,
-            $data['developer_name'] ?? null
-        );
-        return SoftwareContext::update($software);
-    }
-
-    public static function destroy(int $id): bool {
-        return SoftwareContext::delete($id);
-    }
+    throw new Exception('Invalid request');
+} catch (Exception $e) {
+    http_response_code(400);
+    echo json_encode(['status'=>'error','message'=>$e->getMessage()]);
+    exit;
 }
-?>

@@ -52,20 +52,9 @@
                         <th>Действия</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Монитор Samsung</td>
-                        <td>192.168.0.101</td>
-                        <td>255.255.255.0</td>
-                        <td>192.168.0.1</td>
-                        <td>8.8.8.8, 8.8.4.4</td>
-                        <td class="table-actions">
-                            <a href="#">Редактировать</a>
-                            <a href="#">Удалить</a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="network-body">
+    <!-- сюда JS подставит строки -->
+  </tbody>
             </table>
         </div>
     </main>
@@ -76,6 +65,42 @@
 
 </div>
 <script>
+    const API = '../controllers/NetworkSettingsController.php';
+
+document.addEventListener('DOMContentLoaded', fetchNetworkSettings);
+
+async function fetchNetworkSettings() {
+  try {
+    const res  = await fetch(`${API}?action=get`);
+    const list = await res.json();
+    const tbody = document.getElementById('network-body');
+
+    // если не массив — выходим
+    if (!Array.isArray(list)) {
+      console.error('Ожидался массив сетевых настроек:', list);
+      return;
+    }
+
+    tbody.innerHTML = list.map(n => `
+  <tr>
+    <td>${n.id}</td>
+    <!-- раньше: <td>${n.equipment_id}</td> -->
+    <td>${n.equipment_name}</td>
+    <td>${n.ip_address}</td>
+    <td>${n.subnet_mask}</td>
+    <td>${n.gateway}</td>
+    <td>${n.dns_servers}</td>
+    <td class="table-actions">
+      <a href="#" onclick="alert('Изменение пока не готово');return false;">Изм.</a>
+      <a href="#" onclick="alert('Удаление пока не готово');return false;">Удал.</a>
+    </td>
+  </tr>
+`).join('');
+
+  } catch (err) {
+    console.error('Error loading network settings:', err);
+  }
+}
     function toggleMenu() {
         const nav = document.getElementById('mobileMenu');
         nav.classList.toggle('open');

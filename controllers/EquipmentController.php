@@ -1,52 +1,32 @@
 <?php
-require_once '../connection.php';
-require_once '../models/Equipment.php';
-require_once '../models/EquipmentContext.php';
+// controllers/EquipmentController.php
+ini_set('display_errors', 0);
+header('Content-Type: application/json; charset=utf-8');
+
+require_once __DIR__ . '/../connection.php';
+require_once __DIR__ . '/../models/Equipment.php';         // модель оставляем без изменений
+require_once __DIR__ . '/../models/EquipmentContext.php';  // контекст тоже
 
 class EquipmentController {
-
     public static function index(): array {
-        return EquipmentContext::getAll();
+        return EquipmentContext::getAll();                 // :contentReference[oaicite:0]{index=0}
     }
-
-    public static function store(array $data): bool {
-        $equipment = new Equipment(
-            0,
-            $data['name'],
-            $data['photo'] ?? null,
-            $data['inventory_number'],
-            $data['room_id'] ?? null,
-            $data['responsible_user_id'] ?? null,
-            $data['temporary_responsible_user_id'] ?? null,
-            $data['price'] ?? null,
-            $data['model_id'] ?? null,
-            $data['comment'] ?? null,
-            $data['direction_name'] ?? null,
-            $data['status'] ?? null
-        );
-        return EquipmentContext::add($equipment);
-    }
-
-    public static function update(int $id, array $data): bool {
-        $equipment = new Equipment(
-            $id,
-            $data['name'],
-            $data['photo'] ?? null,
-            $data['inventory_number'],
-            $data['room_id'] ?? null,
-            $data['responsible_user_id'] ?? null,
-            $data['temporary_responsible_user_id'] ?? null,
-            $data['price'] ?? null,
-            $data['model_id'] ?? null,
-            $data['comment'] ?? null,
-            $data['direction_name'] ?? null,
-            $data['status'] ?? null
-        );
-        return EquipmentContext::update($equipment);
-    }
-
-    public static function destroy(int $id): bool {
-        return EquipmentContext::delete($id);
-    }
+    public static function store(array $data): bool { /* ... */ }
+    public static function update(int $id, array $data): bool { /* ... */ }
+    public static function destroy(int $id): bool { /* ... */ }
 }
+
+// Обработка AJAX-запроса
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get') {
+    $list = EquipmentController::index();                  // :contentReference[oaicite:1]{index=1}
+    // превращаем объекты в ассоц. массивы
+    $out  = array_map(fn($e) => get_object_vars($e), $list);
+    echo json_encode($out, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// В остальных случаях — HTTP 400
+http_response_code(400);
+echo json_encode(['status'=>'error','message'=>'Invalid request'], JSON_UNESCAPED_UNICODE);
+exit;
 ?>

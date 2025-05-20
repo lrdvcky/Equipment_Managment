@@ -50,18 +50,9 @@
                         <th>Действия</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Windows 10 Pro</td>
-                        <td>20H2</td>
-                        <td>Microsoft</td>
-                        <td class="table-actions">
-                            <a href="#">Редактировать</a>
-                            <a href="#">Удалить</a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="software-body">
+          <!-- сюда JS подставит строки -->
+            </tbody>
             </table>
         </div>
     </main>
@@ -72,6 +63,31 @@
 
 </div>
 <script>
+    async function fetchSoftware() {
+  try {
+    const res = await fetch('../controllers/SoftwareController.php?action=get');
+    const text = await res.text();                  // <- читаем как текст
+    console.log('RAW RESPONSE:', text);             // <- смотрим в консоли
+    const list = JSON.parse(text);  
+
+        const tbody = document.getElementById('software-body');
+        tbody.innerHTML = '';
+
+        list.forEach(s => {
+          tbody.innerHTML += `
+            <tr>
+              <td>${s.id}</td>
+              <td>${s.name}</td>
+              <td>${s.version ?? ''}</td>
+              <td>${s.developer_name ?? ''}</td>
+            </tr>`;
+        });
+      } catch (err) {
+    console.error('Error loading software list:', err);
+  }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchSoftware);
     function toggleMenu() {
         const nav = document.getElementById('mobileMenu');
         nav.classList.toggle('open');

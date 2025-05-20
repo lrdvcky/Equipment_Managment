@@ -1,39 +1,46 @@
 <?php
-require_once '../connection.php';
-require_once '../models/User.php';
-require_once '../models/UsersContext.php';
+// controllers/UserController.php
+require_once __DIR__ . '/../connection.php';
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/UsersContext.php';
 
-class UserController {
-    public static function handleRequest() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-            $user = new Users(
-                $_POST['id'] ?? 0,
-                $_POST['username'],
-                $_POST['password'],
-                $_POST['role'],
-                $_POST['email'],
-                $_POST['last_name'],
-                $_POST['first_name'],
-                $_POST['middle_name'],
-                $_POST['phone'],
-                $_POST['address']
-            );
+header('Content-Type: application/json');
+$method = $_SERVER['REQUEST_METHOD'];
 
-            switch ($_POST['action']) {
-                case 'add':
-                    UsersContext::addUser($user);
-                    break;
-                case 'update':
-                    UsersContext::updateUser($user);
-                    break;
-                case 'delete':
-                    UsersContext::deleteUser($user->id);
-                    break;
-            }
-
-            header('Location: users.php');
-            exit();
-        }
-    }
+if ($method === 'GET' && ($_GET['action'] ?? '') === 'get') {
+    $users = array_map(fn($u) => get_object_vars($u), UsersContext::getAllUsers());
+    echo json_encode($users);
+    exit;
 }
-?>
+
+if ($method === 'POST') {
+    $input = json_decode(file_get_contents('php://input'), true) ?? [];
+    $action = $input['action'] ?? '';
+    try {
+        switch ($action) {
+            case 'create':
+                $newId = UsersContext::createUser($input['data']);
+                echo json_encode(['status'=>'success', 'id'=>$newId]);
+                break;
+            case 'update':
+                UsersContext::updateUser((int)$input['id'], $input['data']);
+                echo json_encode(['status'=>'success']);
+                break;
+            case 'delete':
+                UsersContext::deleteUser((int)$input['id']);
+                echo json_encode(['status'=>'success']);
+                break;
+            default:
+                throw new Exception("Unknown action");
+        }
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status'=>'error', 'message'=>$e->getMessage()]);
+    }
+    exit;
+}
+
+// Любой другой запрос — ошибка
+http_response_code(400);
+echo json_encode(['status'=>'error','message'=>'Invalid request']);
+exit;

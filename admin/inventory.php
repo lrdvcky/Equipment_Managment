@@ -53,23 +53,12 @@
                         <th>Действия</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Инвентаризация весна 2025</td>
-                        <td>01.03.2025</td>
-                        <td>10.03.2025</td>
-                        <td class="table-actions">
-                            <a href="#">Оборудование</a>
-                            <a href="#">Удалить</a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="checks-body"></tbody>
             </table>
         </div>
 
-        <h3>Результаты инвентаризации №1</h3>
         <div class="equipment-table">
+        <h2 id="results-heading" style="margin-top:20px;">Результаты инвентаризации</h2>
             <table>
                 <thead>
                     <tr>
@@ -79,26 +68,7 @@
                         <th>Статус</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Монитор Samsung</td>
-                        <td>Басалаев А.И.</td>
-                        <td>Оборудование в порядке</td>
-                        <td><span style="color: green;">Принято</span></td>
-                    </tr>
-                    <tr>
-                        <td>ПК Lenovo</td>
-                        <td>Суслонова М.Л.</td>
-                        <td>Всё функционирует</td>
-                        <td><span style="color: green;">Принято</span></td>
-                    </tr>
-                    <tr>
-                        <td>Принтер HP</td>
-                        <td>Субботина Ю.А.</td>
-                        <td>Устройство на ремонте</td>
-                        <td><span style="color: red;">Не принято</span></td>
-                    </tr>
-                </tbody>
+                <tbody id="results-body"></tbody>
             </table>
         </div>
 
@@ -110,6 +80,59 @@
 
 </div>
 <script>
+    const API = '../controllers/InventoryCheckController.php';
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetchChecks();
+  // делегируем клик по кнопкам «Показать результаты»
+  document.getElementById('checks-body').addEventListener('click', e => {
+    if (e.target.matches('.show-results')) {
+      fetchResults(e.target.dataset.id);
+    }
+  });
+});
+
+async function fetchChecks() {
+  const res    = await fetch(`${API}?action=getChecks`);
+  const checks = await res.json();
+  const tb     = document.getElementById('checks-body');
+  tb.innerHTML = '';
+  checks.forEach(c => {
+    tb.innerHTML += `
+      <tr>
+        <td>${c.id}</td>
+        <td>${c.name}</td>
+        <td>${c.start_date}</td>
+        <td>${c.end_date}</td>
+        <td><button class="show-results" data-id="${c.id}">Оборудование</button></td>
+      </tr>`;
+  });
+  if (checks.length) fetchResults(checks[0].id);
+}
+
+async function fetchResults(checkId) {
+  document.getElementById('results-heading').textContent =
+      `Результаты инвентаризации №${checkId}`;
+
+  const res     = await fetch(`${API}?action=getResults&id=${checkId}`);
+  const results = await res.json();
+  const tbody   = document.getElementById('results-body');
+  tbody.innerHTML = '';
+
+  results.forEach(r => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.equipment_id}</td>
+        <td>${r.equipment_name}</td>
+        <td>${r.checked_by || '-'}</td>
+        <td>${r.comment   || ''}</td>
+        <td>${r.check     || ''}</td>
++       <td>${r.software || '-'}</td>
+      </tr>`;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', fetchChecks);
     function toggleMenu() {
         const nav = document.getElementById('mobileMenu');
         nav.classList.toggle('open');

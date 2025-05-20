@@ -56,25 +56,9 @@
                         <th>Действия</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td><img src="../img/sample.png" alt="фото" style="height: 40px;"></td>
-                        <td>ПК Lenovo</td>
-                        <td>INV002</td>
-                        <td>Ауд.502</td>
-                        <td>Суслонова</td>
-                        <td>Субботина</td>
-                        <td>35000 ₽</td>
-                        <td>Программирование</td>
-                        <td>Используется</td>
-                        <td>Lenovo M720</td>
-                        <td>Основной ПК</td>
-                        <td class="table-actions">
-                            <a href="#">Редактировать</a>
-                            <a href="#">Удалить</a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="equipment-body">
+            <!-- сюда подставит JS -->
+          </tbody>
             </table>
         </div>
 
@@ -90,6 +74,44 @@
 
 </div>
 <script>
+    const API = '../controllers/EquipmentController.php?action=get';
+
+async function fetchEquipment() {
+  try {
+    const res  = await fetch(API);
+    const list = await res.json();
+    const tbody = document.getElementById('equipment-body');
+    tbody.innerHTML = '';
+
+    list.forEach(item => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${ item.photo 
+              ? `<img src="data:image/jpeg;base64,${btoa(item.photo)}" style="height:40px">`
+              : `<img src="../img/no-photo.png" style="height:40px">`
+          }</td>
+          <td>${item.name}</td>
+          <td>${item.inventory_number}</td>
+          <td>${item.room_id  || ''}</td>
+          <td>${item.responsible_user_id  || ''}</td>
+          <td>${item.temporary_responsible_user_id  || ''}</td>
+          <td>${item.price  ? item.price + ' ₽' : ''}</td>
+          <td>${item.direction_name || ''}</td>
+          <td>${item.status || ''}</td>
+          <td>${item.model_id || ''}</td>
+          <td>${item.comment || ''}</td>
+          <td class="table-actions">
+            <a href="#" onclick="alert('Edit пока не готов')">Редактировать</a>
+            <a href="#" onclick="alert('Delete пока не готов')">Удалить</a>
+          </td>
+        </tr>`;
+    });
+  } catch (err) {
+    console.error('Error loading equipment:', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchEquipment);
     function toggleMenu() {
         const nav = document.getElementById('mobileMenu');
         nav.classList.toggle('open');

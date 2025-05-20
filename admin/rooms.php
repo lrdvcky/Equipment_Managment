@@ -49,18 +49,9 @@
                         <th>Действия</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Аудитория 502</td>
-                        <td>Ауд.502</td>
-                        <td>Суслонова</td>
-                        <td>Субботина</td>
-                        <td class="table-actions">
-                            <a href="#">Редактировать</a>
-                            <a href="#">Удалить</a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="rooms-body">
+          <!-- JS сюда подставит все аудитории -->
+        </tbody>
             </table>
         </div>
 
@@ -76,6 +67,36 @@
 
 </div>
 <script>
+    const API = '../controllers/RoomController.php?action=get';
+
+async function fetchRooms() {
+  try {
+    const res  = await fetch(API);
+    const list = await res.json();
+    const tbody = document.getElementById('rooms-body');
+    tbody.innerHTML = '';
+
+    list.forEach(r => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${r.name}</td>
+          <td>${r.short_name || ''}</td>
+          <td>${r.responsible_name || '-'}</td>
+          <td>${r.temporary_responsible_name || '-'}</td>
+          <td class="table-actions">
+            <a href="#" onclick="alert('Редактирование пока не реализовано')">Редактировать</a>
+            <a href="#" onclick="alert('Удаление пока не реализовано')">Удалить</a>
+          </td>
+        </tr>`;
+    });
+  } catch (err) {
+    console.error('Error loading rooms list:', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchRooms);
+
+document.addEventListener('DOMContentLoaded', fetchRooms);
     function toggleMenu() {
         const nav = document.getElementById('mobileMenu');
         nav.classList.toggle('open');

@@ -1,20 +1,20 @@
 <?php
-require_once '../connection.php';
-require_once 'ConsumableType.php';
+// models/ConsumableTypeContext.php
+require_once __DIR__ . '/../connection.php';
+require_once __DIR__ . '/ConsumableType.php';
 
 class ConsumableTypeContext {
     public static function getAll(): array {
-        global $pdo;
-        $stmt = $pdo->query("SELECT * FROM ConsumableType");
-        $types = [];
-
+        $pdo = OpenConnection();
+        $stmt = $pdo->query("SELECT * FROM `ConsumableType`");
+        $list = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $types[] = new ConsumableType(
+            $list[] = new ConsumableType(
                 $row['id'],
                 $row['name']
             );
         }
-        return $types;
+        return $list;
     }
 
     public static function add(ConsumableType $type): bool {

@@ -54,23 +54,9 @@
                         <th>Действия</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td><img src="../img/sample.png" alt="img" style="height: 40px;"></td>
-                        <td>Картридж HP 106A</td>
-                        <td>Чёрный лазерный картридж</td>
-                        <td>01.04.2025</td>
-                        <td>5</td>
-                        <td>Картридж</td>
-                        <td>Басалаев</td>
-                        <td>Суслонова</td>
-                        <td>Цвет: Чёрный; Объём: 1500 стр.</td>
-                        <td class="table-actions">
-                            <a href="#">Редактировать</a>
-                            <a href="#">Удалить</a>
-                        </td>
-                    </tr>
-                </tbody>
+                <tbody id="consumables-body">
+            <!-- JS подставит строки -->
+          </tbody>
             </table>
         </div>
 
@@ -87,6 +73,34 @@
 
 </div>
 <script>
+    const API = '../controllers/ConsumableController.php?action=get';
+
+document.addEventListener('DOMContentLoaded', fetchConsumables);
+
+async function fetchConsumables() {
+  const res  = await fetch(API);
+  const list = await res.json();
+  console.log('RAW consumables:', list);
+  if (!Array.isArray(list)) return;
+  const tbody = document.getElementById('consumables-body');
+  tbody.innerHTML = list.map(c => `
+    <tr>
+      <td>${c.id}</td>
+      <td>${c.name}</td>
+      <td>${c.description || ''}</td>
+      <td>${c.arrival_date || ''}</td>
+      <td>${c.quantity}</td>
+      <td>${c.type_name}</td>
+      <td>${c.responsible_name}</td>
+      <td>${c.temporary_responsible_name}</td>
+      <td>${c.properties}</td>
+      <td>
+        <button>Изм.</button>
+        <button>Удал.</button>
+      </td>
+    </tr>
+  `).join('');
+}
     function toggleMenu() {
         const nav = document.getElementById('mobileMenu');
         nav.classList.toggle('open');

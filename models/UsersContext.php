@@ -1,17 +1,14 @@
 <?php
-require_once '../admin/users.php';
-require_once '../connection.php';
-require_once 'User.php';
-require_once '../controllers/UserController.php';
+require_once __DIR__ . '/User.php';
+require_once __DIR__ . '/../connection.php';
 
 class UsersContext {
     public static function getAllUsers(): array {
         $users = [];
         $conn = OpenConnection();
-        $sql = "SELECT * FROM User";
-        $result = $conn->query($sql);
-
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+        $sql  = "SELECT * FROM User";
+        $stmt = $conn->query($sql);
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $users[] = new User(
                 $row['id'],
                 $row['username'],
@@ -26,6 +23,12 @@ class UsersContext {
             );
         }
         return $users;
+    }
+
+    public static function deleteUser(int $id): void {
+        $conn = OpenConnection();
+        $stmt = $conn->prepare("DELETE FROM User WHERE id = ?");
+        $stmt->execute([$id]);
     }
     public static function addUser(Users $user): void {
     $conn = OpenConnection();
@@ -59,10 +62,4 @@ public static function updateUser(Users $user): void {
         $user->id
     ]);
 }
-
-public static function deleteUser(int $id): void {
-    $conn = OpenConnection();
-    $stmt = $conn->prepare("DELETE FROM User WHERE id = ?");
-    $stmt->execute([$id]);
-}
-}
+};

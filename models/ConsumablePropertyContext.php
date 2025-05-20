@@ -1,22 +1,23 @@
+
 <?php
-require_once '../connection.php';
-require_once 'ConsumableProperty.php';
+// models/ConsumablePropertyContext.php
+require_once __DIR__ . '/../connection.php';
+require_once __DIR__ . '/ConsumableProperty.php';
 
 class ConsumablePropertyContext {
     public static function getAll(): array {
-        global $pdo;
-        $stmt = $pdo->query("SELECT * FROM ConsumableProperty");
-        $properties = [];
-
+        $pdo = OpenConnection();
+        $stmt = $pdo->query("SELECT * FROM `ConsumableProperty`");
+        $list = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $properties[] = new ConsumableProperty(
+            $list[] = new ConsumableProperty(
                 $row['id'],
-                $row['consumable_id'],
+                (int)$row['consumable_id'],
                 $row['property_name'],
                 $row['property_value']
             );
         }
-        return $properties;
+        return $list;
     }
 
     public static function add(ConsumableProperty $property): bool {
