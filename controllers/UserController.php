@@ -1,5 +1,4 @@
 <?php
-// controllers/UserController.php
 require_once __DIR__ . '/../connection.php';
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../models/UsersContext.php';
@@ -40,7 +39,6 @@ if ($method === 'POST') {
     exit;
 }
 
-// Любой другой запрос — ошибка
 http_response_code(400);
 echo json_encode(['status'=>'error','message'=>'Invalid request']);
 exit;

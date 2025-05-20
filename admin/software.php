@@ -66,8 +66,8 @@
     async function fetchSoftware() {
   try {
     const res = await fetch('../controllers/SoftwareController.php?action=get');
-    const text = await res.text();                  // <- читаем как текст
-    console.log('RAW RESPONSE:', text);             // <- смотрим в консоли
+    const text = await res.text();                 
+    console.log('RAW RESPONSE:', text);            
     const list = JSON.parse(text);  
 
         const tbody = document.getElementById('software-body');

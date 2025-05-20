@@ -29,17 +29,11 @@ try {
             }
             $checkId = (int)$_GET['id'];
 
-            // 1) Берём результаты из EquipmentInventoryCheck
             $raw = EquipmentInventoryCheckContext::getByCheckId($checkId);
-            // ожидается, что getByCheckId возвращает массив ассоц. массивов:
-            // [ ['equipment_id'=>..., 'checked_by_user_id'=>..., 'comment'=>..., 'check'=>...], ... ]
 
-            // 2) Для каждого результата добавляем список софта
             $out = [];
             foreach ($raw as $row) {
-                // подтягиваем имена софта
                 $softList = EquipmentSoftwareContext::getByEquipmentId($row['equipment_id']);
-                // Если контекст возвращает объекты, конвертим:
                 $names = array_map(
                     fn($s) => is_object($s) ? $s->name : ($s['name'] ?? ''),
                     $softList

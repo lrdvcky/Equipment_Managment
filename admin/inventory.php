@@ -84,7 +84,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchChecks();
-  // делегируем клик по кнопкам «Показать результаты»
   document.getElementById('checks-body').addEventListener('click', e => {
     if (e.target.matches('.show-results')) {
       fetchResults(e.target.dataset.id);

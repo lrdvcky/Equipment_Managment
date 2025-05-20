@@ -1,7 +1,4 @@
 <?php
-// controllers/RoomController.php
-
-// Отключаем вывод «сырого» HTML-ошибок
 ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 
@@ -15,10 +12,9 @@ try {
         $out   = [];
 
         foreach ($rooms as $room) {
-            // Превращаем объект Room в массив
+
             $row = get_object_vars($room);
 
-            // Забираем ФИО «ответственного»
             $stmt = $conn->prepare("
                 SELECT CONCAT_WS(' ', last_name, first_name, middle_name)
                 FROM `User`
@@ -27,7 +23,6 @@ try {
             $stmt->execute([$room->responsible_user_id]);
             $row['responsible_name'] = $stmt->fetchColumn() ?: '';
 
-            // Забираем ФИО «временно ответственного»
             $stmt = $conn->prepare("
                 SELECT CONCAT_WS(' ', last_name, first_name, middle_name)
                 FROM `User`

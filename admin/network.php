@@ -75,7 +75,6 @@ async function fetchNetworkSettings() {
     const list = await res.json();
     const tbody = document.getElementById('network-body');
 
-    // если не массив — выходим
     if (!Array.isArray(list)) {
       console.error('Ожидался массив сетевых настроек:', list);
       return;

@@ -38,22 +38,16 @@ class NetworkSettingsController {
     }
 }
 
-// … header, require_once, класс NetworkSettingsController …
-
-// AJAX-точка входа
 header('Content-Type: application/json; charset=utf-8');
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get') {
         $pdo   = OpenConnection();
-        // Предполагаем, что индекс возвращает объекты NetworkSetting
         $data  = NetworkSettingsController::index();
         $out   = [];
 
         foreach ($data as $ns) {
-            // Превращаем объект в массив
             $row = get_object_vars($ns);
 
-            // Подтягиваем название оборудования
             $stmt = $pdo->prepare("SELECT name FROM `Equipment` WHERE id = ?");
             $stmt->execute([$row['equipment_id']]);
             $row['equipment_name'] = $stmt->fetchColumn() ?: '';

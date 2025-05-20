@@ -8,7 +8,6 @@ header('Content-Type: application/json; charset=utf-8');
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get') {
         $arr = SoftwareContext::getAll();
-        // Преобразуем объекты в массивы
         $out = array_map(fn($s) => get_object_vars($s), $arr);
         echo json_encode($out, JSON_UNESCAPED_UNICODE);
         exit;

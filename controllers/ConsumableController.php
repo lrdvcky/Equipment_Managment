@@ -22,13 +22,10 @@ try {
     foreach ($items as $c) {
         $row = get_object_vars($c);
 
-        // 1) Тип расходника
         $stmt = $pdo->prepare("SELECT name FROM `ConsumableType` WHERE id = ?");
         $stmt->execute([$c->consumable_type_id]);
         $row['type_name'] = $stmt->fetchColumn() ?: '';
-
-        // 2) Характеристики
-        $stmt->execute(); // clear?
+        $stmt->execute();
         $stmt = $pdo->prepare("
             SELECT property_name, property_value
             FROM `ConsumableProperty`
@@ -41,7 +38,6 @@ try {
         }
         $row['properties'] = implode(', ', $props);
 
-        // 3) Ответственный
         $stmt = $pdo->prepare("
             SELECT CONCAT_WS(' ', last_name, first_name, middle_name)
             FROM `User` WHERE id = ?
@@ -49,14 +45,12 @@ try {
         $stmt->execute([$c->responsible_user_id]);
         $row['responsible_name'] = $stmt->fetchColumn() ?: '';
 
-        // 4) Временно ответственный
         $stmt->execute([$c->temporary_responsible_user_id]);
         $row['temporary_responsible_name'] = $stmt->fetchColumn() ?: '';
 
         $out[] = $row;
     }
 
-    // Гарантируем, что в выводе будет только JSON
     if (ob_get_level()) ob_end_clean();
     echo json_encode($out, JSON_UNESCAPED_UNICODE);
     exit;
