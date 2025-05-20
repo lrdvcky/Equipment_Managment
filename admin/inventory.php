@@ -56,7 +56,6 @@
                 <tbody id="checks-body"></tbody>
             </table>
         </div>
-
         <div class="equipment-table">
         <h2 id="results-heading" style="margin-top:20px;">Результаты инвентаризации</h2>
             <table>
@@ -83,51 +82,56 @@
     const API = '../controllers/InventoryCheckController.php';
 
 document.addEventListener('DOMContentLoaded', () => {
-  fetchChecks();
-  document.getElementById('checks-body').addEventListener('click', e => {
-    if (e.target.matches('.show-results')) {
-      fetchResults(e.target.dataset.id);
-    }
-  });
+  loadChecks();
+
+  document
+    .getElementById('checks-body')
+    .addEventListener('click', e => {
+      if (e.target.matches('.show-results')) {
+        loadResults(e.target.dataset.id);
+      }
+    });
 });
 
-async function fetchChecks() {
+async function loadChecks() {
   const res    = await fetch(`${API}?action=getChecks`);
   const checks = await res.json();
   const tb     = document.getElementById('checks-body');
-  tb.innerHTML = '';
-  checks.forEach(c => {
-    tb.innerHTML += `
-      <tr>
-        <td>${c.id}</td>
-        <td>${c.name}</td>
-        <td>${c.start_date}</td>
-        <td>${c.end_date}</td>
-        <td><button class="show-results" data-id="${c.id}">Оборудование</button></td>
-      </tr>`;
-  });
-  if (checks.length) fetchResults(checks[0].id);
+  tb.innerHTML = checks.map(c => `
+    <tr>
+      <td>${c.id}</td>
+      <td>${c.name}</td>
+      <td>${c.start_date}</td>
+      <td>${c.end_date}</td>
+      <td>
+        <button class="show-results" data-id="${c.id}">
+          Оборудование
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  if (checks.length) loadResults(checks[0].id);
 }
 
-async function fetchResults(checkId) {
-  document.getElementById('results-heading').textContent =
-    `Результаты инвентаризации №${checkId}`;
+async function loadResults(id) {
+  document.getElementById('results-heading')
+          .textContent = `Результаты инвентаризации №${id}`;
 
-  const res     = await fetch(`${API}?action=getResults&id=${checkId}`);
+  const res     = await fetch(`${API}?action=getResults&id=${id}`);
   const data    = await res.json();
-  const tbody   = document.getElementById('results-body');
+  const tb      = document.getElementById('results-body');
 
   if (!Array.isArray(data)) {
     console.error('Expected array, got', data);
     return;
   }
 
-  tbody.innerHTML = data.map(r => `
+  tb.innerHTML = data.map(r => `
     <tr>
-      <td>${r.equipment_name} (ID:${r.equipment_id})</td>
-      <td>${r.checked_by    || '-'}</td>
-      <td>${r.comment       || ''}</td>
-      <td>${r.status        || ''}</td>
+      <td>${r.equipment_name}</td>
+      <td>${r.checked_by || '-'}</td>
+      <td>${r.comment   || ''}</td>
+      <td>${r.status    || ''}</td>
     </tr>
   `).join('');
 }
