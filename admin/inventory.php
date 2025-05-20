@@ -111,24 +111,25 @@ async function fetchChecks() {
 
 async function fetchResults(checkId) {
   document.getElementById('results-heading').textContent =
-      `Результаты инвентаризации №${checkId}`;
+    `Результаты инвентаризации №${checkId}`;
 
   const res     = await fetch(`${API}?action=getResults&id=${checkId}`);
-  const results = await res.json();
+  const data    = await res.json();
   const tbody   = document.getElementById('results-body');
-  tbody.innerHTML = '';
 
-  results.forEach(r => {
-    tbody.innerHTML += `
-      <tr>
-        <td>${r.equipment_id}</td>
-        <td>${r.equipment_name}</td>
-        <td>${r.checked_by || '-'}</td>
-        <td>${r.comment   || ''}</td>
-        <td>${r.check     || ''}</td>
-+       <td>${r.software || '-'}</td>
-      </tr>`;
-  });
+  if (!Array.isArray(data)) {
+    console.error('Expected array, got', data);
+    return;
+  }
+
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td>${r.equipment_name} (ID:${r.equipment_id})</td>
+      <td>${r.checked_by    || '-'}</td>
+      <td>${r.comment       || ''}</td>
+      <td>${r.status        || ''}</td>
+    </tr>
+  `).join('');
 }
 
 document.addEventListener('DOMContentLoaded', fetchChecks);

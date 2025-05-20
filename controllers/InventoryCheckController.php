@@ -1,12 +1,9 @@
 <?php
-// controllers/InventoryCheckController.php
 ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../connection.php';
 require_once __DIR__ . '/../models/InventoryCheckContext.php';
-require_once __DIR__ . '/../models/EquipmentInventoryCheckContext.php';
-require_once __DIR__ . '/../models/EquipmentSoftwareContext.php'; // <— Новое
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {

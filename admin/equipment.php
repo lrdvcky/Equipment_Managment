@@ -92,13 +92,13 @@ async function fetchEquipment() {
           }</td>
           <td>${item.name}</td>
           <td>${item.inventory_number}</td>
-          <td>${item.room_id  || ''}</td>
-          <td>${item.responsible_user_id  || ''}</td>
-          <td>${item.temporary_responsible_user_id  || ''}</td>
+          <td>${item.room_name || ''}</td>
+          <td>${item.responsible_name  || ''}</td>
+          <td>${item.temporary_responsible_name  || ''}</td>
           <td>${item.price  ? item.price + ' ₽' : ''}</td>
           <td>${item.direction_name || ''}</td>
           <td>${item.status || ''}</td>
-          <td>${item.model_id || ''}</td>
+          <td>${item.model_name || ''}</td>
           <td>${item.comment || ''}</td>
           <td class="table-actions">
             <a href="#" onclick="alert('Edit пока не готов')">Редактировать</a>

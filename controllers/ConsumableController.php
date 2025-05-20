@@ -7,8 +7,6 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../connection.php';
 require_once __DIR__ . '/../models/ConsumableContext.php';
-require_once __DIR__ . '/../models/ConsumableTypeContext.php';
-require_once __DIR__ . '/../models/ConsumablePropertyContext.php';
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET' || ($_GET['action'] ?? '') !== 'get') {
