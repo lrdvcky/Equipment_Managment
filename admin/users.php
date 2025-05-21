@@ -96,24 +96,23 @@ session_start();
   <div class="modal-content">
     <span class="close-button" onclick="closeModal()">&times;</span>
     <h3 id="modal-title">Добавить пользователя</h3>
-    <form id="user-form">
-      <input type="hidden" id="user-id">
-      <label>Логин:<input type="text" id="username" required></label>
-      <label id="label-password">Пароль:<input type="password" id="password" required></label>
+    <form id="user-form" novalidate>
+      <input type="hidden" id="user-id" name="id">
+      <label>Логин:<input type="text" id="username" name="username" required></label>
+      <label id="label-password">Пароль:<input type="password" id="password" name="password" required></label>
       <label>Роль:
-      <select id="role">
-  <option value="admin">Администратор</option>
-  <option value="teacher">Ответственное лицо</option>
-  <option value="staff">Пользователь</option>
-</select>
-
+      <select id="role" name="role">
+        <option value="admin">Администратор</option>
+        <option value="teacher">Ответственное лицо</option>
+        <option value="staff">Пользователь</option>
+      </select>
       </label>
-      <label>Email:<input type="email" id="email"></label>
-      <label>Фамилия:<input type="text" id="last_name" required></label>
-      <label>Имя:<input type="text" id="first_name" required></label>
-      <label>Отчество:<input type="text" id="middle_name"></label>
-      <label>Телефон:<input type="text" id="phone"></label>
-      <label>Адрес:<input type="text" id="address"></label>
+      <label>Email:<input type="email" id="email" name="email"></label>
+      <label>Фамилия:<input type="text" id="last_name" name="last_name" required></label>
+      <label>Имя:<input type="text" id="first_name" name="first_name" required></label>
+      <label>Отчество:<input type="text" id="middle_name" name="middle_name"></label>
+      <label>Телефон:<input type="text" id="phone" name="phone"></label>
+      <label>Адрес:<input type="text" id="address" name="address"></label>
       <button type="submit" class="red-button">Сохранить</button>
     </form>
   </div>
@@ -190,7 +189,7 @@ function editUser(id) {
   document.getElementById('modal-title').textContent = 'Редактировать пользователя';
   document.getElementById('user-id').value = u.id;
   document.getElementById('username').value = u.username;
-  // пароль не меняем
+  // пароль не показываем
   document.getElementById('label-password').style.display = 'none';
   document.getElementById('role').value = u.role;
   document.getElementById('email').value = u.email || '';

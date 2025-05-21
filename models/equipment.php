@@ -31,6 +31,7 @@ class Equipment {
         ?float $price,
         ?int   $model_id,
         ?string $model_name,
+
         ?string $comment,
         ?string $direction_name,
         ?string $status

@@ -5,9 +5,8 @@ header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../models/InventorycheckContext.php';
 require_once __DIR__ . '/../models/inventorycheck.php';
-require_once __DIR__ . '/../models/EquipmentInventoryCheckContext.php';    // <-- вот эта строка
+require_once __DIR__ . '/../models/EquipmentInventoryCheckContext.php';
 require_once __DIR__ . '/../models/EquipmentInventoryCheck.php';
-
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
@@ -29,13 +28,14 @@ try {
             exit;
 
         case 'getResults':
-            if (empty($_GET['id']) || !ctype_digit($_GET['id'])) {
-                throw new Exception('Missing or invalid id');
-            }
-            $checkId = (int)$_GET['id'];
-            $raw = EquipmentInventoryCheckContext::getByCheckId($checkId);
-            echo json_encode($raw, JSON_UNESCAPED_UNICODE);
-            exit;
+    if (empty($_GET['id']) || !ctype_digit($_GET['id'])) {
+        throw new Exception('Missing or invalid id');
+    }
+    $checkId = (int)$_GET['id'];
+    // теперь метод точно существует
+    $records = EquipmentInventoryCheckContext::getByCheckId($checkId);
+    echo json_encode($records, JSON_UNESCAPED_UNICODE);
+    exit;
 
         case 'addCheck':
             $name = trim($_GET['name'] ?? '');

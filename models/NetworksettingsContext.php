@@ -1,57 +1,66 @@
 <?php
-require_once 'networksettings.php';
-require_once '../connection.php';
+require_once __DIR__ . '/networksettings.php';
+require_once __DIR__ . '/../connection.php';
 
-class NetworkSettingsContext {
+class NetworksettingsContext {
     public static function getAll(): array {
-        $settings = [];
-        $conn = OpenConnection();
-        $sql = "SELECT * FROM NetworkSettings";
-        $result = $conn->query($sql);
-
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            $settings[] = new NetworkSettings(
-                $row['id'],
+        $pdo = OpenConnection();
+        $stmt = $pdo->query("SELECT * FROM NetworkSettings");
+        $out = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $out[] = new NetworkSettings(
+                (int)$row['id'],                  // non-null now
                 $row['ip_address'],
+                (int)$row['equipment_id'],
                 $row['subnet_mask'],
                 $row['gateway'],
-                $row['dns_servers'],
-                $row['equipment_id']
+                $row['dns_servers']
             );
         }
-
-        return $settings;
+        return $out;
     }
 
-    public static function add(NetworkSettings $ns): void {
-        $conn = OpenConnection();
-        $stmt = $conn->prepare("INSERT INTO NetworkSettings (ip_address, subnet_mask, gateway, dns_servers, equipment_id) VALUES (?, ?, ?, ?, ?)");
+    public static function add(NetworkSettings $ns): int {
+        $pdo = OpenConnection();
+        $sql = "INSERT INTO NetworkSettings
+                  (ip_address, subnet_mask, gateway, dns_servers, equipment_id)
+                VALUES
+                  (:ip, :mask, :gw, :dns, :eid)";
+        $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            $ns->ip_address,
-            $ns->subnet_mask,
-            $ns->gateway,
-            $ns->dns_servers,
-            $ns->equipment_id
+            ':ip'   => $ns->ip_address,
+            ':mask' => $ns->subnet_mask,
+            ':gw'   => $ns->gateway,
+            ':dns'  => $ns->dns_servers,
+            ':eid'  => $ns->equipment_id,
         ]);
+        return (int)$pdo->lastInsertId();
     }
 
     public static function update(NetworkSettings $ns): void {
-        $conn = OpenConnection();
-        $stmt = $conn->prepare("UPDATE NetworkSettings SET ip_address = ?, subnet_mask = ?, gateway = ?, dns_servers = ?, equipment_id = ? WHERE id = ?");
+        $pdo = OpenConnection();
+        $sql = "UPDATE NetworkSettings SET
+                  ip_address   = :ip,
+                  equipment_id = :eid,
+                  subnet_mask  = :mask,
+                  gateway      = :gw,
+                  dns_servers  = :dns
+                WHERE id = :id";
+        $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            $ns->ip_address,
-            $ns->subnet_mask,
-            $ns->gateway,
-            $ns->dns_servers,
-            $ns->equipment_id,
-            $ns->id
+            ':ip'   => $ns->ip_address,
+            ':eid'  => $ns->equipment_id,
+            ':mask' => $ns->subnet_mask,
+            ':gw'   => $ns->gateway,
+            ':dns'  => $ns->dns_servers,
+            ':id'   => $ns->id,
         ]);
     }
 
     public static function delete(int $id): void {
-        $conn = OpenConnection();
-        $stmt = $conn->prepare("DELETE FROM NetworkSettings WHERE id = ?");
-        $stmt->execute([$id]);
+        $pdo = OpenConnection();
+        $pdo->prepare("DELETE FROM NetworkSettings WHERE id = ?")
+            ->execute([$id]);
     }
 }
 ?>

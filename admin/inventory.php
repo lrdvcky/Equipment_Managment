@@ -222,21 +222,32 @@ session_start();
 
     // Загрузить и показать результаты инвентаризации
     async function loadResults(checkId, checkName) {
-    document.getElementById('results-check-name').textContent = checkName;
-    document.getElementById('results-section').style.display = 'block';
+  const res  = await fetch(`${API}?action=getResults&id=${checkId}`);
+  const body = await res.json();                 // <-- вот это ваш массив или объект ошибки
 
-    const res  = await fetch(`${API}?action=getResults&id=${checkId}`);
-    const data = await res.json();
-
-    document.getElementById('results-body').innerHTML = data.map(r => `
-      <tr>
-        <td>${r.equipment_name}</td>
-        <td>${r.user_fullname}</td>
-        <td>${r.comment}</td>
-        <td>${r.check ? '✔️' : '✖️'}</td>
-      </tr>
-    `).join('');
+  if (!res.ok) {                                 // если сервер вернул 400–500
+    alert('Ошибка: ' + (body.message || res.statusText));
+    return;
   }
+
+  if (!Array.isArray(body)) {
+    console.error('Ожидался массив результатов, получили:', body);
+    return;
+  }
+
+  document.getElementById('results-check-name').textContent = checkName;
+  document.getElementById('results-section').style.display = 'block';
+
+  document.getElementById('results-body').innerHTML = body.map(r => `
+    <tr>
+      <td>${r.equipment_name}</td>
+      <td>${r.user_fullname || '—'}</td>
+      <td>${r.comment}</td>
+      <td>${r.check == 1 ? '✔️' : '✖️'}</td>
+    </tr>
+  `).join('');
+}
+
   </script>
 </body>
 </html>

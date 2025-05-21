@@ -1,7 +1,8 @@
 <?php
 // models/InventorycheckContext.php
-require_once 'inventorycheck.php';
-require_once '../connection.php';
+
+require_once __DIR__ . '/inventorycheck.php';
+require_once __DIR__ . '/../connection.php';
 
 class InventoryCheckContext {
     public static function getAll(): array {
@@ -18,29 +19,9 @@ class InventoryCheckContext {
         }
         return $items;
     }
-    public static function getByCheckId(int $checkId): array {
-        $records = [];
-        $conn = OpenConnection();
-        $stmt = $conn->prepare(
-            "SELECT * 
-               FROM EquipmentInventoryCheck 
-              WHERE inventory_check_id = ?"
-        );
-        $stmt->execute([$checkId]);
-    
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $records[] = [
-                'equipment_id'        => (int)$row['equipment_id'],
-                'checked_by_user_id'  => $row['checked_by_user_id'] !== null
-                                         ? (int)$row['checked_by_user_id']
-                                         : null,
-                'comment'             => $row['comment'],
-                'check'               => (bool)$row['check']
-            ];
-        }
-    
-        return $records;
-    }
+
+    // Нам более не нужен метод getByCheckId здесь,
+    // он используется только в EquipmentInventoryCheckContext
     public static function add(InventoryCheck $item): void {
         $conn = OpenConnection();
         $stmt = $conn->prepare(
@@ -72,4 +53,3 @@ class InventoryCheckContext {
         $stmt->execute([$id]);
     }
 }
-?>

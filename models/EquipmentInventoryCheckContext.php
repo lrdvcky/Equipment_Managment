@@ -22,35 +22,34 @@ class EquipmentInventoryCheckContext {
         return $records;
     }
     public static function getByCheckId(int $checkId): array {
-        $records = [];
         $conn = OpenConnection();
-        $stmt = $conn->prepare(
-            "SELECT
-               ic.equipment_id,
-               e.name            AS equipment_name,
-               ic.checked_by_user_id,
-               u.full_name       AS user_fullname,
-               ic.comment,
-               ic.check
-             FROM EquipmentInventoryCheck ic
-             LEFT JOIN Equipment e
-               ON e.id = ic.equipment_id
-             LEFT JOIN users u
-               ON u.id = ic.checked_by_user_id
-             WHERE ic.inventory_check_id = ?"
-        );
+        $sql = "
+          SELECT
+            ic.equipment_id,
+            e.name AS equipment_name,
+            ic.checked_by_user_id,
+            -- собираем полное имя пользователя
+            CONCAT(
+              u.last_name, ' ',
+              u.first_name,
+              IF(u.middle_name IS NOT NULL AND u.middle_name <> '',
+                 CONCAT(' ', u.middle_name),
+                 '')
+            ) AS user_fullname,
+            ic.comment,
+            ic.`check`
+          FROM EquipmentInventoryCheck AS ic
+          LEFT JOIN Equipment AS e
+            ON e.id = ic.equipment_id
+          -- здесь правильное имя таблицы
+          LEFT JOIN `User` AS u
+            ON u.id = ic.checked_by_user_id
+          WHERE ic.inventory_check_id = ?
+        ";
+        $stmt = $conn->prepare($sql);
         $stmt->execute([$checkId]);
-
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $records[] = [
-                'equipment_name'  => $row['equipment_name'],
-                'user_fullname'   => $row['user_fullname'] ?? '—',
-                'comment'         => $row['comment'] ?? '',
-                'check'           => (bool)$row['check'],
-            ];
-        }
-
-        return $records;
+        // вернём ассоциативный массив результатов
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     public static function add(EquipmentInventoryCheck $item): void {
         $conn = OpenConnection();
