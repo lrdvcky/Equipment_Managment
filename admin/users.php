@@ -1,3 +1,6 @@
+<?php 
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,6 +16,7 @@
         <div class="header-content">
             <img src="../img/logo.png" alt="Логотип" class="logo">
             <h1>Система учёта оборудования</h1>
+            <a href="../logout.php" class="red-button" style="margin-bottom: 10px; text-decoration: none;">Выход</a>
             <button class="burger" onclick="toggleMenu()">☰</button>
         </div>
         <nav id="mobileMenu">

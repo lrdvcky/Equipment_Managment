@@ -1,5 +1,9 @@
 <?php
-
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -17,6 +21,8 @@
     <div class="header-content">
         <img src="../img/logo.png" alt="Логотип" class="logo">
         <h1>Система учёта оборудования</h1>
+        
+        <a href="../logout.php" class="red-button" style="margin-bottom: 10px; text-decoration: none;">Выход</a>
         <button class="burger" onclick="toggleMenu()">☰</button>
     </div>
     <nav id="mobileMenu">
