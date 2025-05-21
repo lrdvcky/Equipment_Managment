@@ -62,7 +62,7 @@ if (!isset($_SESSION['user_id'])) {
     const check = document.getElementById('status').checked;
     const equipmentId = /* Получите ID оборудования, например, из выбранного элемента или другого источника */;
 
-    fetch('../user_controller/EquipmentInventoryCheckUserController.php', {
+    fetch('../user_controller/EquipmentController.php?action=getByUser', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
