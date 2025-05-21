@@ -21,7 +21,37 @@ class EquipmentInventoryCheckContext {
 
         return $records;
     }
+    public static function getByCheckId(int $checkId): array {
+        $records = [];
+        $conn = OpenConnection();
+        $stmt = $conn->prepare(
+            "SELECT
+               ic.equipment_id,
+               e.name            AS equipment_name,
+               ic.checked_by_user_id,
+               u.full_name       AS user_fullname,
+               ic.comment,
+               ic.check
+             FROM EquipmentInventoryCheck ic
+             LEFT JOIN Equipment e
+               ON e.id = ic.equipment_id
+             LEFT JOIN users u
+               ON u.id = ic.checked_by_user_id
+             WHERE ic.inventory_check_id = ?"
+        );
+        $stmt->execute([$checkId]);
 
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $records[] = [
+                'equipment_name'  => $row['equipment_name'],
+                'user_fullname'   => $row['user_fullname'] ?? '—',
+                'comment'         => $row['comment'] ?? '',
+                'check'           => (bool)$row['check'],
+            ];
+        }
+
+        return $records;
+    }
     public static function add(EquipmentInventoryCheck $item): void {
         $conn = OpenConnection();
         $stmt = $conn->prepare("INSERT INTO EquipmentInventoryCheck (equipment_id, inventory_check_id, checked_by_user_id, comment, `check`) VALUES (?, ?, ?, ?, ?)");
