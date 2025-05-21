@@ -1,49 +1,53 @@
 <?php
-ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
-
-require_once __DIR__ . '/../connection.php';
 require_once __DIR__ . '/../models/RoomContext.php';
 
-try {
-    if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get') {
-        $conn  = OpenConnection();
-        $rooms = RoomContext::getAll();
-        $out   = [];
+$method = $_SERVER['REQUEST_METHOD'];
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
 
-        foreach ($rooms as $room) {
-
-            $row = get_object_vars($room);
-
-            $stmt = $conn->prepare("
-                SELECT CONCAT_WS(' ', last_name, first_name, middle_name)
-                FROM `User`
-                WHERE id = ?
-            ");
-            $stmt->execute([$room->responsible_user_id]);
-            $row['responsible_name'] = $stmt->fetchColumn() ?: '';
-
-            $stmt = $conn->prepare("
-                SELECT CONCAT_WS(' ', last_name, first_name, middle_name)
-                FROM `User`
-                WHERE id = ?
-            ");
-            $stmt->execute([$room->temporary_responsible_user_id]);
-            $row['temporary_responsible_name'] = $stmt->fetchColumn() ?: '';
-
-            $out[] = $row;
-        }
-
-        echo json_encode($out, JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-    throw new Exception('Invalid request');
-} catch (Throwable $e) {
-    http_response_code(400);
-    echo json_encode([
-        'status'  => 'error',
-        'message' => $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
+if ($method==='GET' && $action==='get') {
+    $list = RoomContext::getAll();
+    echo json_encode(array_map(fn($r)=>get_object_vars($r), $list), JSON_UNESCAPED_UNICODE);
     exit;
 }
-?>
+
+if ($method==='POST') {
+    try {
+        switch ($action) {
+            case 'create':
+                $id = RoomContext::create(
+                    trim($_POST['name'] ?? ''),
+                    trim($_POST['short_name'] ?? ''),
+                    $_POST['responsible_user_id'] ?: null,
+                    $_POST['temporary_responsible_user_id'] ?: null
+                );
+                echo json_encode(['status'=>'success','id'=>$id], JSON_UNESCAPED_UNICODE);
+                break;
+            case 'update':
+                RoomContext::update(
+                    (int)($_POST['id'] ?? 0),
+                    trim($_POST['name'] ?? ''),
+                    trim($_POST['short_name'] ?? ''),
+                    $_POST['responsible_user_id'] ?: null,
+                    $_POST['temporary_responsible_user_id'] ?: null
+                );
+                echo json_encode(['status'=>'success'], JSON_UNESCAPED_UNICODE);
+                break;
+            case 'destroy':
+                RoomContext::delete((int)($_POST['id'] ?? 0));
+                echo json_encode(['status'=>'success'], JSON_UNESCAPED_UNICODE);
+                break;
+            default:
+                http_response_code(400);
+                echo json_encode(['status'=>'error','message'=>"Unknown action {$action}"], JSON_UNESCAPED_UNICODE);
+        }
+    } catch(Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status'=>'error','message'=>$e->getMessage()], JSON_UNESCAPED_UNICODE);
+    }
+    exit;
+}
+
+http_response_code(400);
+echo json_encode(['status'=>'error','message'=>'Invalid request'], JSON_UNESCAPED_UNICODE);
+exit;

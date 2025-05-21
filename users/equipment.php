@@ -57,36 +57,26 @@ if (!isset($_SESSION['user_id'])) {
     </footer>
 </div>
 <script>
-    document.getElementById('submit-button').addEventListener('click', function() {
-    const comment = document.getElementById('comment').value;
-    const check = document.getElementById('status').checked;
-    const equipmentId = /* Получите ID оборудования, например, из выбранного элемента или другого источника */;
+    function fetchUserEquipment() {
+    fetch('../user_controller/EquipmentController.php?action=getByUser')
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('equipment-body');
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.name}</td>
+                        <td>${item.inventory_number}</td>
+                        <td>${item.room_name}</td>
+                        <td>${item.comment ?? ''}</td>
+                    </tr>`;
+            });
+        });
+}
 
-    fetch('../user_controller/EquipmentController.php?action=getByUser', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            equipment_id: equipmentId,
-            comment: comment,
-            check: check
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Данные успешно обновлены.');
-            // Дополнительно можно обновить интерфейс, например, изменить статус на "Принято"
-        } else {
-            alert('Ошибка при обновлении данных.');
-        }
-    })
-    .catch(error => {
-        console.error('Ошибка:', error);
-        alert('Произошла ошибка при отправке данных.');
-    });
-});
+document.addEventListener('DOMContentLoaded', fetchUserEquipment);
+
 
     function toggleMenu() {
         const nav = document.getElementById('mobileMenu');

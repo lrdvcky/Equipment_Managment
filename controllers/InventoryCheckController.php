@@ -1,23 +1,29 @@
 <?php
+// controllers/InventoryCheckController.php
 ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../connection.php';
-require_once __DIR__ . '/../models/InventoryCheckContext.php';
+require_once __DIR__ . '/../models/InventorycheckContext.php';
+require_once __DIR__ . '/../models/inventorycheck.php';
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Only GET allowed');
     }
-
     $action = $_GET['action'] ?? '';
     switch ($action) {
         case 'getChecks':
-            $checks = InventoryCheckContext::getAll();
-            echo json_encode(
-                array_map(fn($c) => get_object_vars($c), $checks),
-                JSON_UNESCAPED_UNICODE
-            );
+            $items = InventoryCheckContext::getAll();
+            $out = array_map(function($i) {
+                return [
+                    'id'         => $i->id,
+                    'name'       => $i->name,
+                    'start_date' => $i->start_date,
+                    'end_date'   => $i->end_date,
+                ];
+            }, $items);
+            echo json_encode($out, JSON_UNESCAPED_UNICODE);
             exit;
 
         case 'getResults':
@@ -25,31 +31,51 @@ try {
                 throw new Exception('Missing or invalid id');
             }
             $checkId = (int)$_GET['id'];
-
             $raw = EquipmentInventoryCheckContext::getByCheckId($checkId);
+            echo json_encode($raw, JSON_UNESCAPED_UNICODE);
+            exit;
 
-            $out = [];
-            foreach ($raw as $row) {
-                $softList = EquipmentSoftwareContext::getByEquipmentId($row['equipment_id']);
-                $names = array_map(
-                    fn($s) => is_object($s) ? $s->name : ($s['name'] ?? ''),
-                    $softList
-                );
-                $row['software'] = implode(', ', $names);
-                $out[] = $row;
+        case 'addCheck':
+            $name = trim($_GET['name'] ?? '');
+            if ($name === '') {
+                throw new Exception('Name is required');
             }
+            $start = $_GET['start_date'] ?: null;
+            $end   = $_GET['end_date']   ?: null;
+            $item = new InventoryCheck(null, $name, $start, $end);
+            InventoryCheckContext::add($item);
+            echo json_encode(['status'=>'ok'], JSON_UNESCAPED_UNICODE);
+            exit;
 
-            echo json_encode($out, JSON_UNESCAPED_UNICODE);
+        case 'updateCheck':
+            if (empty($_GET['id']) || !ctype_digit($_GET['id'])) {
+                throw new Exception('Missing or invalid id');
+            }
+            $id   = (int)$_GET['id'];
+            $name = trim($_GET['name'] ?? '');
+            if ($name === '') {
+                throw new Exception('Name is required');
+            }
+            $start = $_GET['start_date'] ?: null;
+            $end   = $_GET['end_date']   ?: null;
+            $item = new InventoryCheck($id, $name, $start, $end);
+            InventoryCheckContext::update($item);
+            echo json_encode(['status'=>'ok'], JSON_UNESCAPED_UNICODE);
+            exit;
+
+        case 'deleteCheck':
+            if (empty($_GET['id']) || !ctype_digit($_GET['id'])) {
+                throw new Exception('Missing or invalid id');
+            }
+            InventoryCheckContext::delete((int)$_GET['id']);
+            echo json_encode(['status'=>'ok'], JSON_UNESCAPED_UNICODE);
             exit;
 
         default:
-            throw new Exception("Unknown action “{$action}”");
+            throw new Exception("Unknown action \"{$action}\"");
     }
 } catch (Throwable $e) {
     http_response_code(400);
-    echo json_encode(
-        ['status'=>'error','message'=>$e->getMessage()],
-        JSON_UNESCAPED_UNICODE
-    );
+    echo json_encode(['status'=>'error','message'=>$e->getMessage()], JSON_UNESCAPED_UNICODE);
     exit;
 }

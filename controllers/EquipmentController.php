@@ -1,59 +1,83 @@
 <?php
-ini_set('display_errors', 0);
+// controllers/EquipmentController.php
 header('Content-Type: application/json; charset=utf-8');
 
-require_once __DIR__ . '/../connection.php';
-require_once __DIR__ . '/../models/Equipment.php';         
-require_once __DIR__ . '/../models/EquipmentContext.php';  
+require_once __DIR__ . '/../models/EquipmentContext.php';
 
-class EquipmentController {
-    public static function index(): array {
-        return EquipmentContext::getAll();                 
-    }
-    public static function store(array $data): bool { /* ... */ }
-    public static function update(int $id, array $data): bool { /* ... */ }
-    public static function destroy(int $id): bool { /* ... */ }
-}
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['action'] ?? '') === 'get') {
-    $pdo  = OpenConnection();
-    $list = EquipmentController::index();
-    $out  = [];
+$method = $_SERVER['REQUEST_METHOD'];
+$action = $_POST['action'] ?? $_GET['action'] ?? '';
 
-    foreach ($list as $e) {
-        $row = get_object_vars($e);
-
-        // 1) Аудитория (room)
-        $stmt = $pdo->prepare("SELECT name FROM `Room` WHERE id = ?");
-        $stmt->execute([$e->room_id]);
-        $row['room_name'] = $stmt->fetchColumn() ?: '';
-
-        // 2) Ответственный пользователь
-        $stmt = $pdo->prepare("
-            SELECT CONCAT_WS(' ', last_name, first_name, middle_name)
-            FROM `User` WHERE id = ?
-        ");
-        $stmt->execute([$e->responsible_user_id]);
-        $row['responsible_name'] = $stmt->fetchColumn() ?: '';
-        
-        if (!empty($e->model_id)) {
-            $stmt = $pdo->prepare("SELECT name FROM `Model` WHERE id = ?");
-            $stmt->execute([$e->model_id]);
-            $row['model_name'] = $stmt->fetchColumn() ?: '';
-        } else {
-            $row['model_name'] = '';
-        }
-        // 3) Временно ответственный
-        $stmt->execute([$e->temporary_responsible_user_id]);
-        $row['temporary_responsible_name'] = $stmt->fetchColumn() ?: '';
-
-        $out[] = $row;
-    }
-
+if ($method === 'GET' && $action === 'get') {
+    $items = EquipmentContext::getAll();
+    $out = array_map(fn($e) => get_object_vars($e), $items);
     echo json_encode($out, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
+if ($method === 'POST') {
+    try {
+        switch ($action) {
+            case 'create':
+                $data = parseRequest();
+                $newId = EquipmentContext::create($data);
+                echo json_encode(['status' => 'success', 'id' => $newId], JSON_UNESCAPED_UNICODE);
+                break;
+
+            case 'update':
+                $id = (int)($_POST['id'] ?? 0);
+                $data = parseRequest($allowNoPhoto = true);
+                EquipmentContext::update($id, $data);
+                echo json_encode(['status' => 'success'], JSON_UNESCAPED_UNICODE);
+                break;
+
+            case 'destroy':
+                $id = (int)($_POST['id'] ?? 0);
+                EquipmentContext::delete($id);
+                echo json_encode(['status' => 'success'], JSON_UNESCAPED_UNICODE);
+                break;
+
+            default:
+                http_response_code(400);
+                echo json_encode(['status' => 'error', 'message' => "Unknown action '{$action}'"], JSON_UNESCAPED_UNICODE);
+        }
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+    }
+    exit;
+}
+
+// любой другой запрос — 400
 http_response_code(400);
-echo json_encode(['status'=>'error','message'=>'Invalid request'], JSON_UNESCAPED_UNICODE);
+echo json_encode(['status' => 'error', 'message' => 'Invalid request'], JSON_UNESCAPED_UNICODE);
 exit;
-?>
+
+
+/**
+ * Собирает из $_POST и $_FILES массив для create/update
+ * @param bool $allowNoPhoto — при update не обязательно присылать фото
+ * @return array
+ */
+function parseRequest(bool $allowNoPhoto = false): array {
+    $fields = [
+        'name', 'inventory_number', 'room_id',
+        'responsible_user_id', 'temporary_responsible_user_id',
+        'price', 'model_id', 'direction_name',
+        'status', 'comment'
+    ];
+    $data = [];
+    foreach ($fields as $f) {
+        // пустая строка → null
+        $data[$f] = array_key_exists($f, $_POST) && $_POST[$f] !== '' 
+                    ? $_POST[$f] 
+                    : null;
+    }
+
+    // обрабатываем файл photo
+    if (isset($_FILES['photo']) && is_uploaded_file($_FILES['photo']['tmp_name'])) {
+        $data['photo'] = file_get_contents($_FILES['photo']['tmp_name']);
+    } elseif (!$allowNoPhoto) {
+        $data['photo'] = null;
+    }
+    return $data;
+}

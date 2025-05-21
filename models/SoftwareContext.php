@@ -5,55 +5,65 @@ require_once __DIR__ . '/Software.php';
 require_once __DIR__ . '/../connection.php';
 
 class SoftwareContext {
-
     /** @return Software[] */
     public static function getAll(): array {
         $conn = OpenConnection();
-        $sql  = "SELECT * FROM `Software`";
-        $stmt = $conn->query($sql);
-        $list = [];
+        $stmt = $conn->query("SELECT * FROM `Software` ORDER BY id");
+        $out  = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $list[] = new Software(
+            $out[] = new Software(
                 (int)$row['id'],
                 $row['name'],
-                $row['version'] ?? null,
-                $row['developer_name'] ?? null
+                $row['version'],
+                $row['developer_name']
             );
         }
-        return $list;
+        return $out;
     }
 
-    public static function add(Software $software): void {
+    /** @return int — ID новой записи */
+    public static function create(array $d): int {
         $conn = OpenConnection();
         $stmt = $conn->prepare("
             INSERT INTO `Software` (name, version, developer_name)
             VALUES (?, ?, ?)
         ");
         $stmt->execute([
-            $software->name,
-            $software->version,
-            $software->developer_name
+            $d['name'],
+            $d['version']        ?? null,
+            $d['developer_name'] ?? null
         ]);
+        return (int)$conn->lastInsertId();
     }
 
-    public static function update(Software $software): void {
+    public static function update(int $id, array $d): void {
         $conn = OpenConnection();
         $stmt = $conn->prepare("
             UPDATE `Software`
-            SET name = ?, version = ?, developer_name = ?
-            WHERE id = ?
+               SET name = ?, version = ?, developer_name = ?
+             WHERE id = ?
         ");
         $stmt->execute([
-            $software->name,
-            $software->version,
-            $software->developer_name,
-            $software->id
+            $d['name'],
+            $d['version']        ?? null,
+            $d['developer_name'] ?? null,
+            $id
         ]);
     }
 
     public static function delete(int $id): void {
         $conn = OpenConnection();
         $stmt = $conn->prepare("DELETE FROM `Software` WHERE id = ?");
-        $stmt->execute([$id]);
+        try {
+            $stmt->execute([$id]);
+        } catch (\PDOException $e) {
+            // код 23000 — нарушение внешнего ключа
+            if ($e->getCode() === '23000') {
+                throw new \Exception(
+                    "Невозможно удалить программу: она используется в связях с оборудованием"
+                );
+            }
+            throw $e;
+        }
     }
 }
