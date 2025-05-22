@@ -40,7 +40,6 @@ session_start();
     .status {
       font-weight: bold;
     }
-    </style>
 </head>
 <body>
   <div class="wrapper">

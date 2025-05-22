@@ -10,22 +10,96 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../style.css">
     <style>
-      /* Стили модального окна (точно как в equipment.php) */
-      .modal {
-        display: none; position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.5); align-items: center; justify-content: center;
-      }
-      .modal-content {
-        background: #FFF; border-radius: 8px;
-        padding: 20px; max-width: 500px; width: 90%;
-        position: relative;
-      }
-      .modal-content .close {
-        position: absolute; top: 10px; right: 10px;
-        font-size: 24px; cursor: pointer;
-      }
-      .modal-content form { display: grid; gap: 10px; }
+        .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .modal-content {
+    background: #FFF;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+  .close:hover {
+    color: #000;
+  }
+
+  /* Форма в модалке (grid) */
+  .modal-content form {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 15px;
+  }
+  .modal-content form label {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: #333;
+  }
+  .modal-content form input[type="text"],
+  .modal-content form input[type="date"] {
+    margin-top: 6px;
+    padding: 8px;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .modal-content form button[type="submit"] {
+    padding: 10px 0;
+    background: #E53935;
+    border: none;
+    color: #FFF;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .modal-content form button[type="submit"]:hover {
+    background: #D32F2F;
+  }
+
+      /* Контролы (поиск + кнопка) */
+    .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+    .controls input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #CCC;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .controls .red-button {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
     </style>
 </head>
 <body>
@@ -50,7 +124,7 @@ session_start();
     </header>
     <main>
     <!-- Toolbar с поиском и добавлением -->
-    <div class="toolbar">
+    <div class="controls">
       <input type="text" id="search-checks" placeholder="Поиск по наименованию…" />
       <button id="add-check-btn" class="red-button">Добавить инвентаризацию</button>
     </div>
@@ -99,15 +173,15 @@ session_start();
         <label>
           Наименование<br/>
           <input type="text" name="name" id="check-name" required />
-        </label><br/><br/>
+        </label>
         <label>
           Дата начала<br/>
           <input type="date" name="start_date" id="check-start" />
-        </label><br/><br/>
+        </label>
         <label>
           Дата окончания<br/>
           <input type="date" name="end_date" id="check-end" />
-        </label><br/><br/>
+        </label>
         <button type="submit">Сохранить</button>
       </form>
     </div>
@@ -213,8 +287,8 @@ session_start();
           <td>${c.end_date||''}</td>
           <td>
             <button class="show-results" data-id="${c.id}">Результаты</button>
-            <button class="edit-check"    data-id="${c.id}">✏️</button>
-            <button class="delete-check"  data-id="${c.id}">🗑️</button>
+            <button class="edit-check"    data-id="${c.id}">Изм.</button>
+            <button class="delete-check"  data-id="${c.id}">Удал.</button>
           </td>
         </tr>
       `).join('');

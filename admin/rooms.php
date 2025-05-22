@@ -11,14 +11,32 @@ session_start();
     <style>
     /* копируем стили из equipment.php, адаптируя ширину формы */
     .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
-    .modal-content { background:#fff; border-radius:8px; padding:20px; width:90%; max-width:500px; box-shadow:0 4px 20px rgba(0,0,0,0.2); position:relative; }
+    .modal-content { background:#fff; border-radius:8px; padding:20px; width:90%; max-width:550px; box-shadow:0 4px 20px rgba(0,0,0,0.2); position:relative; }
     .close-button { position:absolute; top:10px; right:10px; font-size:24px; cursor:pointer; color:#666; }
     .close-button:hover { color:#000; }
 
-    .controls { margin-bottom:15px; display:flex; gap:10px; }
-    .controls input { flex:1; padding:8px; border:1px solid #CCC; border-radius:4px; font-size:14px; }
-    .controls .red-button { padding:8px 16px; }
+    .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
 
+.controls input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid var(--gray);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.controls .red-button {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+}
     table { width:100%; border-collapse:collapse; margin-bottom:20px; }
     th,td { border:1px solid #DDD; padding:6px 10px; vertical-align:middle; font-size:13px; }
     th { background:#F5F5F5; }

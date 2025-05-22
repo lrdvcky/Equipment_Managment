@@ -49,6 +49,7 @@ session_start();
     }
     .modal-content form input[type="text"],
     .modal-content form input[type="file"],
+    .modal-content form input[type="number"],
     .modal-content form select,
     .modal-content form textarea {
       margin-top: 6px;

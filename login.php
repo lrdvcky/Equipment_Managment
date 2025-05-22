@@ -3,7 +3,7 @@ session_start();
 require_once 'connection.php';
 
 $error = '';
-$pdo = OpenConnection(); // ← ВАЖНО! Тут и была ошибка
+$pdo = OpenConnection(); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username']);
@@ -39,6 +39,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Авторизация | Учёт оборудования</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <style>
+        h2.highlight {
+            color: red;
+            text-align: center;
+            margin-top: 0;
+        }
+        p {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .red-button {
+            background-color: red;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+        }
+        .red-button:hover {
+            background-color: #c9302c;
+        }
+        .error {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
@@ -56,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Добро пожаловать! Пожалуйста, авторизуйтесь для входа.</p>
 
         <?php if (!empty($error)): ?>
-            <div style="color: red; margin-bottom: 15px;"><?= htmlspecialchars($error) ?></div>
+            <div style="color: red; margin-bottom: 15px;" class="error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
         <form method="POST" class="auth-form">
