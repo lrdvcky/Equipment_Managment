@@ -21,6 +21,7 @@ class EquipmentInventoryCheckContext {
 
         return $records;
     }
+    
     public static function getByCheckId(int $checkId): array {
         $conn = OpenConnection();
         $sql = "
