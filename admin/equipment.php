@@ -153,6 +153,7 @@ session_start();
           <tr>
             <th>Фото</th><th>Название</th><th>Инв. номер</th><th>Аудитория</th>
             <th>Ответств.</th><th>Врем. отв.</th><th>Стоимость</th><th>Модель</th>
+             <th>Тип оборудования</th>
             <th>Направл.</th><th>Статус</th><th>Комментарий</th><th>Действия</th>
           </tr>
         </thead>
@@ -185,7 +186,7 @@ session_start();
       </label>
 
       <label>Инвентарный номер*:
-        <input type="text" name="inventory_number" id="inventory_number" required>
+        <input type="number" id="inventory_number" name="inventory_number" min="1" max="999">
       </label>
 
       <label>Фото:
@@ -219,6 +220,9 @@ session_start();
       <label class="full">Статус:
         <input type="text" name="status" id="status">
       </label>
+      <label class="full">Тип оборудования:
+  <input type="text" name="equipment_type" id="equipment_type" placeholder="Например: Монитор, Принтер, ПК">
+</label>
 
       <label class="full">Комментарий:
         <textarea name="comment" id="comment"></textarea>
@@ -285,6 +289,7 @@ function renderEquipment(arr) {
         <td>${e.temporary_responsible_user_name||''}</td>
         <td>${e.price!==null?e.price:''}</td>
         <td>${e.model_name||''}</td>
+        <td>${e.equipment_type || ''}</td>
         <td>${e.direction_name||''}</td>
         <td>${e.status||''}</td>
         <td>${e.comment||''}</td>
@@ -311,14 +316,24 @@ function openAddModal() {
 
 function openEditModal(id) {
   editingId = id;
-  const e = equipmentList.find(x=>x.id===id);
+  const e = equipmentList.find(x => x.id === id);
   document.getElementById('modal-title').textContent = 'Редактировать оборудование';
-  ['name','inventory_number','price','direction_name','status','comment']
-    .forEach(k=> document.getElementById(k).value = e[k]||'');
-  ['room_id','responsible_user_id','temporary_responsible_user_id','model_id']
-    .forEach(k=> document.getElementById(k).value = e[k]||'');
+
+  const fields = [
+  'name', 'inventory_number', 'price', 'direction_name',
+  'status', 'comment', 'room_id', 'responsible_user_id',
+  'temporary_responsible_user_id', 'model_id', 'equipment_type'
+];
+
+
+  fields.forEach(key => {
+    const el = document.getElementById(key);
+    if (el) el.value = e[key] ?? '';
+  });
+
   document.getElementById('equipment-modal').style.display = 'flex';
 }
+
 
 function closeModal(){
   document.getElementById('equipment-modal').style.display = 'none';

@@ -17,6 +17,8 @@ class Equipment {
     public ?string $direction_name;
     public ?string $status;
 
+    public ?string $equipment_type; // ✅ новое поле
+
     public function __construct(
         int    $id,
         string $name,
@@ -31,10 +33,10 @@ class Equipment {
         ?float $price,
         ?int   $model_id,
         ?string $model_name,
-
         ?string $comment,
         ?string $direction_name,
-        ?string $status
+        ?string $status,
+        ?string $equipment_type // ✅ добавляем в конструктор
     ) {
         $this->id                            = $id;
         $this->name                          = $name;
@@ -52,5 +54,7 @@ class Equipment {
         $this->comment                       = $comment;
         $this->direction_name                = $direction_name;
         $this->status                        = $status;
+        $this->equipment_type                = $equipment_type; // ✅ присваиваем
     }
 }
+?>
