@@ -18,28 +18,115 @@ session_start();
       background: rgba(0,0,0,0.5);
       justify-content: center;
       align-items: center;
+      z-index: 1000;
     }
     .modal-content {
       background: #fff;
       padding: 20px;
-      border-radius: 5px;
-      max-width: 400px;
+      border-radius: 8px;
+      max-width: 500px;
       width: 90%;
       position: relative;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
     .close-btn {
       position: absolute;
       top: 10px; right: 10px;
-      font-size: 20px;
+      font-size: 24px;
       cursor: pointer;
+      color: #666;
     }
-    .modal-content label {
-      display: block;
-      margin-bottom: 10px;
+    .close-btn:hover {
+      color: #000;
     }
     .status {
       font-weight: bold;
     }
+    
+    /* Контролы */
+    .equipment-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    .equipment-controls input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #CCC;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .equipment-controls .red-button {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    
+    /* Таблица */
+    .equipment-table {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    .equipment-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .equipment-table th, 
+    .equipment-table td {
+      border: 1px solid #DDD;
+      padding: 10px;
+      text-align: left;
+    }
+    .equipment-table th {
+      background: #F5F5F5;
+    }
+    .equipment-table tr:hover {
+      background-color: #f9f9f9;
+    }
+    
+    /* Форма в модалке */
+    .modal-content form {
+      display: grid;
+      grid-gap: 15px;
+    }
+    .modal-content label {
+      display: flex;
+      flex-direction: column;
+      font-size: 14px;
+      color: #333;
+    }
+    .modal-content input[type="text"],
+    .modal-content select {
+      margin-top: 6px;
+      padding: 8px;
+      border: 1px solid #CCC;
+      border-radius: 4px;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .modal-content button[type="submit"] {
+      padding: 10px;
+      background: #E53935;
+      color: #FFF;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .modal-content button[type="submit"]:hover {
+      background: #D32F2F;
+    }
+       table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+    th,td { border:1px solid #DDD; padding:6px 10px; vertical-align:middle; font-size:13px; }
+    th { background:#F5F5F5; }
+
+  </style>
 </head>
 <body>
   <div class="wrapper">
@@ -66,7 +153,7 @@ session_start();
       <div class="equipment-controls">
         <input id="search" type="text" placeholder="Поиск по IP или оборудованию" oninput="filterSettings()">
         <button class="red-button" onclick="openCreateModal()">Добавить настройки</button>
-        <button class="red-button" style="margin-left:10px;" onclick="checkNetwork()">Проверить сети</button>
+        <button class="red-button"  onclick="checkNetwork()">Проверить сети</button>
       </div>
       <div class="table-container">
         <table>

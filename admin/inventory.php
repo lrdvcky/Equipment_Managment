@@ -100,6 +100,10 @@ session_start();
         padding: 10px;
         box-sizing: border-box;
     }
+       table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+    th,td { border:1px solid #DDD; padding:6px 10px; vertical-align:middle; font-size:13px; }
+    th { background:#F5F5F5; }
+
     </style>
 </head>
 <body>
