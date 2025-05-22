@@ -37,26 +37,20 @@ session_start();
       display: block;
       margin-bottom: 10px;
     }
-    .modal-content input {
-      width: 100%;
-      padding: 5px;
-      margin-top: 5px;
-      box-sizing: border-box;
+    .status {
+      font-weight: bold;
     }
-  </style>
+    </style>
 </head>
 <body>
-
-<div class="wrapper">
-
+  <div class="wrapper">
     <header>
-    <div class="header-content">
+      <div class="header-content">
         <img src="../img/logo.png" alt="Логотип" class="logo">
         <h1>Система учёта оборудования</h1>
-        <a href="../logout.php" class="red-button" style="margin-bottom: 10px; text-decoration: none;">Выход</a>
         <button class="burger" onclick="toggleMenu()">☰</button>
-    </div>
-    <nav id="mobileMenu">
+      </div>
+      <nav id="mobileMenu">
         <a href="index.php">Главная</a>
         <a href="equipment.php">Оборудование</a>
         <a href="users.php">Пользователи</a>
@@ -65,20 +59,28 @@ session_start();
         <a href="inventory.php">Инвентаризация</a>
         <a href="consumables.php">Расходники</a>
         <a href="network.php">Сетевые настройки</a>
-    </nav>
-</header>
+      </nav>
+    </header>
 
     <main>
-        <h2 class="highlight">Настройки сети</h2>
+      <h2 class="highlight">Настройки сети</h2>
       <div class="equipment-controls">
         <input id="search" type="text" placeholder="Поиск по IP или оборудованию" oninput="filterSettings()">
         <button class="red-button" onclick="openCreateModal()">Добавить настройки</button>
+        <button class="red-button" style="margin-left:10px;" onclick="checkNetwork()">Проверить сети</button>
       </div>
-      <div class="equipment-table">
+      <div class="table-container">
         <table>
           <thead>
             <tr>
-              <th>ID</th><th>Оборудование</th><th>IP-адрес</th><th>Маска</th><th>Шлюз</th><th>DNS</th><th>Действия</th>
+              <th>ID</th>
+              <th>Оборудование</th>
+              <th>IP-адрес</th>
+              <th>Маска</th>
+              <th>Шлюз</th>
+              <th>DNS</th>
+              <th>Статус</th>
+              <th>Действия</th>
             </tr>
           </thead>
           <tbody id="network-body"></tbody>
@@ -95,9 +97,9 @@ session_start();
       <form id="ns-form">
         <input type="hidden" id="ns-id">
         <label>IP-адрес:<input type="text" id="ip_address" required></label>
-        <label>Маска подсети:<input type="text" id="subnet_mask"></label>
-        <label>Шлюз:<input type="text" id="gateway"></label>
-        <label>DNS:<input type="text" id="dns_servers"></label>
+        <label>Маска подсети:<input type="text" id="subnet_mask" required></label>
+        <label>Шлюз:<input type="text" id="gateway" required></label>
+        <label>DNS (через запятую):<input type="text" id="dns_servers"></label>
         <label>Оборудование:
           <select id="equipment_id" required>
             <option value="">— выберите —</option>
@@ -112,7 +114,6 @@ session_start();
     const API = '../controllers/NetworkSettingsController.php';
     let settings = [], equipment = [], editId = null;
 
-    // загрузка и рендеринг
     document.addEventListener('DOMContentLoaded', () => {
       fetchNetworkSettings();
       fetchEquipmentList();
@@ -130,6 +131,7 @@ session_start();
       const res = await fetch(`${API}?action=equipment`);
       equipment = await res.json();
       const sel = document.getElementById('equipment_id');
+      sel.innerHTML = '<option value="">— выберите —</option>';
       equipment.forEach(e => {
         const o = document.createElement('option');
         o.value = e.id; o.textContent = e.name;
@@ -139,13 +141,14 @@ session_start();
 
     function renderSettings(list) {
       document.getElementById('network-body').innerHTML = list.map(n=>`
-        <tr>
+        <tr id="row-${n.id}">
           <td>${n.id}</td>
           <td>${n.equipment_name}</td>
           <td>${n.ip_address}</td>
           <td>${n.subnet_mask||''}</td>
           <td>${n.gateway||''}</td>
           <td>${n.dns_servers||''}</td>
+          <td class="status">${n.status||''}</td>
           <td>
             <button onclick="openEditModal(${n.id})">Изм.</button>
             <button onclick="deleteSetting(${n.id})">Удал.</button>
@@ -165,27 +168,48 @@ session_start();
     function openCreateModal() {
       editId = null;
       document.getElementById('modal-title').textContent = 'Добавить настройки';
-      document.getElementById('ns-form').reset();
-      closeModal(); // сбросить предыдущие listeners
+      ['ip_address','subnet_mask','gateway','dns_servers','equipment_id'].forEach(id=>document.getElementById(id).value = '');
       document.getElementById('ns-id').value = '';
       document.getElementById('ns-modal').style.display = 'flex';
     }
 
     function openEditModal(id) {
+      const n = settings.find(x=>x.id===id);
+      if (!n) return;
       editId = id;
-      const n = settings.find(x => x.id===id);
-      document.getElementById('modal-title').textContent = 'Редактировать настройки';
-      document.getElementById('ns-id').value         = n.id;
-      document.getElementById('ip_address').value    = n.ip_address;
-      document.getElementById('subnet_mask').value   = n.subnet_mask||'';
-      document.getElementById('gateway').value       = n.gateway||'';
-      document.getElementById('dns_servers').value   = n.dns_servers||'';
-      document.getElementById('equipment_id').value  = n.equipment_id||'';
+      document.getElementById('modal-title').textContent = 'Изменить настройки';
+      document.getElementById('ns-id').value = id;
+      document.getElementById('ip_address').value = n.ip_address;
+      document.getElementById('subnet_mask').value = n.subnet_mask||'';
+      document.getElementById('gateway').value = n.gateway||'';
+      document.getElementById('dns_servers').value = n.dns_servers||'';
+      document.getElementById('equipment_id').value = n.equipment_id;
       document.getElementById('ns-modal').style.display = 'flex';
     }
 
     function closeModal() {
       document.getElementById('ns-modal').style.display = 'none';
+    }
+
+    async function onSave(e) {
+      e.preventDefault();
+      const data = {
+        ip_address:  document.getElementById('ip_address').value.trim(),
+        subnet_mask: document.getElementById('subnet_mask').value.trim(),
+        gateway:     document.getElementById('gateway').value.trim(),
+        dns_servers: document.getElementById('dns_servers').value.trim(),
+        equipment_id:+document.getElementById('equipment_id').value
+      };
+      const payload = editId
+        ? { action:'update', id:editId, data }
+        : { action:'create', data };
+      await fetch(API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      closeModal();
+      fetchNetworkSettings();
     }
 
     async function deleteSetting(id) {
@@ -198,45 +222,18 @@ session_start();
       fetchNetworkSettings();
     }
 
-    async function onSave(e) {
-      e.preventDefault();
-      const data = {
-        ip_address:   document.getElementById('ip_address').value,
-        subnet_mask:  document.getElementById('subnet_mask').value||null,
-        gateway:      document.getElementById('gateway').value||null,
-        dns_servers:  document.getElementById('dns_servers').value||null,
-        equipment_id: parseInt(document.getElementById('equipment_id').value,10)
-      };
-      const payload = editId
-        ? { action:'update', id:editId, data }
-        : { action:'create', data };
-      console.log('👉 API URL:', API);
-      console.log('👉 Payload:', payload);
+    // Проверка доступности устройств (TCP 80)
+    async function checkNetwork() {
       try {
-    const resp = await fetch(API, {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
-    });
-    const text = await resp.text();
-    console.log('🛑 Raw response (text):', text);
-    // если это валидный JSON, дальше его распарсим
-    try {
-      console.log('✅ Parsed JSON:', JSON.parse(text));
-    } catch {
-      console.warn('⚠️ Response is not JSON');
-    }
-  } catch(err) {
-    console.error('❌ Fetch failed:', err);
-  }
-      await fetch(API, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
-
-      closeModal();
-      fetchNetworkSettings();
+        const res = await fetch(`${API}?action=check`);
+        const stats = await res.json();
+        stats.forEach(s => {
+          const cell = document.querySelector(`#row-${s.id} .status`);
+          if (cell) cell.textContent = s.status;
+        });
+      } catch (err) {
+        console.error('Ошибка при проверке сети:', err);
+      }
     }
   </script>
 </body>

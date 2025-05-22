@@ -9,7 +9,7 @@ class NetworksettingsContext {
         $out = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $out[] = new NetworkSettings(
-                (int)$row['id'],                  // non-null now
+                (int)$row['id'],
                 $row['ip_address'],
                 (int)$row['equipment_id'],
                 $row['subnet_mask'],
@@ -20,9 +20,27 @@ class NetworksettingsContext {
         return $out;
     }
 
+    public static function getByEquipment(int $equipment_id): ?NetworkSettings {
+        $pdo  = OpenConnection();
+        $stmt = $pdo->prepare("SELECT * FROM NetworkSettings WHERE equipment_id = ?");
+        $stmt->execute([$equipment_id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return null;
+        }
+        return new NetworkSettings(
+            (int)$row['id'],
+            $row['ip_address'],
+            (int)$row['equipment_id'],
+            $row['subnet_mask'],
+            $row['gateway'],
+            $row['dns_servers']
+        );
+    }
+
     public static function add(NetworkSettings $ns): int {
         $pdo = OpenConnection();
-        $sql = "INSERT INTO NetworkSettings
+        $sql = "INSERT INTO NetworkSettings 
                   (ip_address, subnet_mask, gateway, dns_servers, equipment_id)
                 VALUES
                   (:ip, :mask, :gw, :dns, :eid)";
@@ -41,18 +59,18 @@ class NetworksettingsContext {
         $pdo = OpenConnection();
         $sql = "UPDATE NetworkSettings SET
                   ip_address   = :ip,
-                  equipment_id = :eid,
                   subnet_mask  = :mask,
                   gateway      = :gw,
-                  dns_servers  = :dns
+                  dns_servers  = :dns,
+                  equipment_id = :eid
                 WHERE id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':ip'   => $ns->ip_address,
-            ':eid'  => $ns->equipment_id,
             ':mask' => $ns->subnet_mask,
             ':gw'   => $ns->gateway,
             ':dns'  => $ns->dns_servers,
+            ':eid'  => $ns->equipment_id,
             ':id'   => $ns->id,
         ]);
     }

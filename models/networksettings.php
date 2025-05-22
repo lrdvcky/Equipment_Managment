@@ -14,7 +14,7 @@ class NetworkSettings {
         string $ip_address,
         int $equipment_id,
         ?string $subnet_mask = null,
-        ?string $gateway = null,
+        ?string $gateway     = null,
         ?string $dns_servers = null
     ) {
         $this->id           = $id;
