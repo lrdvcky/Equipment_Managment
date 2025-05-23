@@ -41,8 +41,7 @@ session_start();
     .modal-content form label {
       display: flex;
       flex-direction: column;
-      font-size: 14px;
-      color: #333;
+      font-size: 14px; color: #333;
     }
     .modal-content form label.full {
       grid-column: 1 / -1;
@@ -59,19 +58,15 @@ session_start();
       font-size: 14px;
     }
     .modal-content form textarea {
-      resize: vertical;
-      min-height: 60px;
+      resize: vertical; min-height: 60px;
     }
     .modal-content form button {
       grid-column: 1 / -1;
       padding: 10px 0;
       background: #E53935;
-      border: none;
-      color: #FFF;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
+      border: none; color: #FFF;
+      font-size: 16px; border-radius: 4px;
+      cursor: pointer; margin-top: 10px;
     }
     .modal-content form button:hover {
       background: #D32F2F;
@@ -79,43 +74,29 @@ session_start();
 
     /* --- Общие стили списка --- */
     .equipment-controls {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 10px;
+      margin-bottom: 15px; display: flex; gap: 10px;
     }
     .equipment-controls input {
-      flex: 1;
-      padding: 8px;
-      border: 1px solid #CCC;
-      border-radius: 4px;
+      flex: 1; padding: 8px;
+      border: 1px solid #CCC; border-radius: 4px;
       font-size: 14px;
     }
     .equipment-controls .red-button {
       padding: 8px 16px;
     }
     table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
+      width: 100%; border-collapse: collapse; margin-bottom: 20px;
     }
     th, td {
-      border: 1px solid #DDD;
-      padding: 6px 10px;
-      font-size: 13px;
-      vertical-align: middle;
+      border: 1px solid #DDD; padding: 6px 10px;
+      font-size: 13px; vertical-align: middle;
     }
-    th {
-      background: #F5F5F5;
-    }
+    th { background: #F5F5F5; }
     img.thumb {
-      width: 40px;
-      height: auto;
-      border-radius: 2px;
+      width: 40px; height: auto; border-radius: 2px;
     }
     .notes ul {
-      list-style: disc inside;
-      font-size: 13px;
-      color: #555;
+      list-style: disc inside; font-size: 13px; color: #555;
     }
   </style>
 </head>
@@ -141,7 +122,7 @@ session_start();
   </header>
 
   <main>
-  <h2 class="highlight">Список оборудования</h2>
+    <h2 class="highlight">Список оборудования</h2>
 
     <div class="equipment-controls">
       <input type="text" id="search" placeholder="Поиск по названию…" oninput="filterEquipment()">
@@ -152,10 +133,20 @@ session_start();
       <table>
         <thead>
           <tr>
-            <th>Фото</th><th>Название</th><th>Инв. номер</th><th>Аудитория</th>
-            <th>Ответств.</th><th>Врем. отв.</th><th>Стоимость</th><th>Модель</th>
-             <th>Тип оборудования</th>
-            <th>Направл.</th><th>Статус</th><th>Комментарий</th><th>Действия</th>
+            <th>Фото</th>
+            <th>Название</th>
+            <th>Инв. номер</th>
+            <th>Аудитория</th>
+            <th>Ответств.</th>
+            <th>Врем. отв.</th>
+            <th>Стоимость</th>
+            <th>Модель</th>
+            <th>Тип оборудования</th>
+            <th>Направл.</th>
+            <th>Статус</th>
+            <th>Комментарий</th>
+            <th>Раздел</th>
+            <th>Действия</th>
           </tr>
         </thead>
         <tbody id="equipment-body"></tbody>
@@ -221,12 +212,19 @@ session_start();
       <label class="full">Статус:
         <input type="text" name="status" id="status">
       </label>
+
       <label class="full">Тип оборудования:
-  <input type="text" name="equipment_type" id="equipment_type" placeholder="Например: Монитор, Принтер, ПК">
-</label>
+        <input type="text" name="equipment_type" id="equipment_type" placeholder="Например: Монитор, Принтер, ПК">
+      </label>
 
       <label class="full">Комментарий:
         <textarea name="comment" id="comment"></textarea>
+      </label>
+
+      <label class="full">Раздел инвентаризации:
+        <select name="inventory_section" id="inventory_section">
+          <option value="">—Выберите раздел—</option>
+        </select>
       </label>
 
       <button type="submit">Сохранить</button>
@@ -235,157 +233,173 @@ session_start();
 </div>
 
 <script>
-// данные справочников и оборудования
-let equipmentList = [], roomsList = [], usersList = [], modelsList = [], editingId = null;
+  let equipmentList = [], roomsList = [], usersList = [], modelsList = [], checksList = [], editingId = null;
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  Promise.all([
-    fetch('../controllers/RoomController.php?action=get').then(r=>r.json()),
-    fetch('../controllers/UserController.php?action=get').then(r=>r.json()),
-    fetch('../controllers/ModelController.php?action=get').then(r=>r.json())
-  ]).then(([rooms, users, models])=>{
-    roomsList  = rooms;
-    usersList  = users.map(u=>({
-      id: u.id,
-      name: `${u.last_name} ${u.first_name}${u.middle_name? ' '+u.middle_name : ''}`
-    }));
-    modelsList = models;
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // 1) Загрузка всех «разделов» (инвентаризаций) для селекта
+    fetch('../controllers/InventoryCheckController.php?action=getChecks')
+      .then(r=>r.json())
+      .then(data=>{
+        checksList = data;
+        const sel = document.getElementById('inventory_section');
+        data.forEach(c=>{
+          sel.insertAdjacentHTML('beforeend',
+            `<option value="${c.name}">${c.name}</option>`);
+        });
+      });
 
-    fillSelect('room_id', roomsList,  'name');
-    fillSelect('responsible_user_id', usersList, 'name');
-    fillSelect('temporary_responsible_user_id', usersList, 'name');
-    fillSelect('model_id', modelsList, 'name');
+    // 2) Загрузить справочники: аудитории, пользователи, модели
+    Promise.all([
+      fetch('../controllers/RoomController.php?action=get').then(r=>r.json()),
+      fetch('../controllers/UserController.php?action=get').then(r=>r.json()),
+      fetch('../controllers/ModelController.php?action=get').then(r=>r.json())
+    ]).then(([rooms, users, models])=>{
+      roomsList  = rooms;
+      usersList  = users.map(u=>({
+        id: u.id,
+        name: `${u.last_name} ${u.first_name}${u.middle_name? ' '+u.middle_name : ''}`
+      }));
+      modelsList = models;
 
-    fetchEquipment();
-  });
-});
+      fillSelect('room_id', roomsList, 'name');
+      fillSelect('responsible_user_id', usersList, 'name');
+      fillSelect('temporary_responsible_user_id', usersList, 'name');
+      fillSelect('model_id', modelsList, 'name');
 
-function fillSelect(id, arr, key) {
-  const sel = document.getElementById(id);
-  arr.forEach(o=>{
-    const opt = document.createElement('option');
-    opt.value = o.id;
-    opt.textContent = o[key];
-    sel.append(opt);
-  });
-}
-
-function fetchEquipment() {
-  fetch('../controllers/EquipmentController.php?action=get')
-    .then(r=>r.json())
-    .then(data=>{ equipmentList = data; renderEquipment(data); });
-}
-
-function renderEquipment(arr) {
-  const body = document.getElementById('equipment-body');
-  body.innerHTML = '';
-  arr.forEach(e=>{
-    body.insertAdjacentHTML('beforeend', `
-      <tr>
-        <td>${e.photo?`<img src="${e.photo}" class="thumb">`:''}</td>
-        <td>${e.name}</td>
-        <td>${e.inventory_number}</td>
-        <td>${e.room_name||''}</td>
-        <td>${e.responsible_user_name||''}</td>
-        <td>${e.temporary_responsible_user_name||''}</td>
-        <td>${e.price!==null?e.price:''}</td>
-        <td>${e.model_name||''}</td>
-        <td>${e.equipment_type || ''}</td>
-        <td>${e.direction_name||''}</td>
-        <td>${e.status||''}</td>
-        <td>${e.comment||''}</td>
-        <td>
-          <button onclick="openEditModal(${e.id})">Изм.</button>
-          <button onclick="deleteEquipment(${e.id})">Удал.</button>
-        </td>
-      </tr>
-    `);
-  });
-}
-
-function filterEquipment() {
-  const q = document.getElementById('search').value.toLowerCase();
-  renderEquipment(equipmentList.filter(e=>e.name.toLowerCase().includes(q)));
-}
-
-function openAddModal() {
-  editingId = null;
-  document.getElementById('modal-title').textContent = 'Добавить оборудование';
-  document.getElementById('equipment-form').reset();
-  document.getElementById('equipment-modal').style.display = 'flex';
-}
-
-function openEditModal(id) {
-  editingId = id;
-  const e = equipmentList.find(x => x.id === id);
-  document.getElementById('modal-title').textContent = 'Редактировать оборудование';
-
-  const fields = [
-  'name', 'inventory_number', 'price', 'direction_name',
-  'status', 'comment', 'room_id', 'responsible_user_id',
-  'temporary_responsible_user_id', 'model_id', 'equipment_type'
-];
-
-
-  fields.forEach(key => {
-    const el = document.getElementById(key);
-    if (el) el.value = e[key] ?? '';
-  });
-
-  document.getElementById('equipment-modal').style.display = 'flex';
-}
-
-
-function closeModal(){
-  document.getElementById('equipment-modal').style.display = 'none';
-}
-document.addEventListener('click', e=>{
-  if(e.target.id==='equipment-modal') closeModal();
-});
-
-document.getElementById('equipment-form').addEventListener('submit', ev=>{
-  ev.preventDefault();
-  const form = ev.target;
-  const name = form.name.value.trim();
-  const inv  = form.inventory_number.value.trim();
-  if(!name) return alert('Название обязательно');
-  if(!inv)  return alert('Инвентарный номер обязателен');
-
-  const price = form.price.value.trim();
-  if(price && !/^\d+(\.\d+)?$/.test(price))
-    return alert('Стоимость — только цифры или точка');
-
-  const fd = new FormData(form);
-  fd.set('action', editingId ? 'update' : 'create');
-  if(editingId) fd.set('id', editingId);
-
-  fetch('../controllers/EquipmentController.php', {
-    method:'POST',
-    body: fd
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(res.status==='success') {
-      closeModal();
       fetchEquipment();
-    } else {
-      alert('Ошибка: '+(res.message||'неизвестная'));
-    }
-  })
-  .catch(err=>alert('Сетевая ошибка: '+err));
-});
+    });
 
-function deleteEquipment(id) {
-  if(!confirm('Удалить оборудование?')) return;
-  const fd = new FormData();
-  fd.set('action','destroy');
-  fd.set('id',id);
-  fetch('../controllers/EquipmentController.php',{
-    method:'POST',
-    body:fd
-  })
-  .then(_=>fetchEquipment());
-}
+    // 3) Обработчик формы
+    document.getElementById('equipment-form')
+      .addEventListener('submit', saveEquipment);
+  });
+
+  function fillSelect(id, arr, key) {
+    const sel = document.getElementById(id);
+    arr.forEach(o=>{
+      sel.insertAdjacentHTML('beforeend',
+        `<option value="${o.id}">${o[key]}</option>`);
+    });
+  }
+
+  // Загрузка и рендер списка оборудования
+  function fetchEquipment() {
+    fetch('../controllers/EquipmentController.php?action=get')
+      .then(r=>r.json())
+      .then(data=>{ equipmentList = data; renderEquipment(data); });
+  }
+
+  function renderEquipment(arr) {
+    const body = document.getElementById('equipment-body');
+    body.innerHTML = '';
+    arr.forEach(e=>{
+      body.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td>${e.photo?`<img src="${e.photo}" class="thumb">`:''}</td>
+          <td>${e.name}</td>
+          <td>${e.inventory_number}</td>
+          <td>${e.room_name||''}</td>
+          <td>${e.responsible_user_name||''}</td>
+          <td>${e.temporary_responsible_user_name||''}</td>
+          <td>${e.price!==null?e.price:''}</td>
+          <td>${e.model_name||''}</td>
+          <td>${e.equipment_type||''}</td>
+          <td>${e.direction_name||''}</td>
+          <td>${e.status||''}</td>
+          <td>${e.comment||''}</td>
+          <td>${e.inventory_section||''}</td>
+          <td>
+            <button onclick="openEditModal(${e.id})">Изм.</button>
+            <button onclick="deleteEquipment(${e.id})">Удал.</button>
+          </td>
+        </tr>
+      `);
+    });
+  }
+
+  // Поиск
+  function filterEquipment() {
+    const q = document.getElementById('search').value.toLowerCase();
+    renderEquipment(
+      equipmentList.filter(e=>e.name.toLowerCase().includes(q))
+    );
+  }
+
+  // Открыть модалку «Добавить»
+  function openAddModal() {
+    editingId = null;
+    document.getElementById('modal-title').textContent = 'Добавить оборудование';
+    document.getElementById('equipment-form').reset();
+    document.getElementById('equipment-modal').style.display = 'flex';
+  }
+
+  // Открыть модалку «Редактировать»
+  function openEditModal(id) {
+    editingId = id;
+    const e = equipmentList.find(x=>x.id===id);
+    document.getElementById('modal-title').textContent = 'Редактировать оборудование';
+    // простые поля
+    ['name','inventory_number','price','direction_name','status','comment'].forEach(key=>{
+      document.getElementById(key).value = e[key] || '';
+    });
+    // селекты
+    ['room_id','responsible_user_id','temporary_responsible_user_id','model_id'].forEach(id=>{
+      document.getElementById(id).value = e[id] || '';
+    });
+    // новое поле раздела
+    document.getElementById('inventory_section').value = e.inventory_section || '';
+    document.getElementById('equipment-modal').style.display = 'flex';
+  }
+
+  function closeModal(){
+    document.getElementById('equipment-modal').style.display = 'none';
+  }
+  document.addEventListener('click', e=>{
+    if(e.target.id==='equipment-modal') closeModal();
+  });
+
+  // Сохранение (create/update)
+  function saveEquipment(ev) {
+    ev.preventDefault();
+    const form = ev.target;
+    const name = form.name.value.trim();
+    const inv  = form.inventory_number.value.trim();
+    if(!name) return alert('Название обязательно');
+    if(!inv)  return alert('Инвентарный номер обязателен');
+    const price = form.price.value.trim();
+    if(price && !/^\d+(\.\d+)?$/.test(price))
+      return alert('Стоимость — только цифры или точка');
+
+    const fd = new FormData(form);
+    fd.set('action', editingId ? 'update' : 'create');
+    if(editingId) fd.set('id', editingId);
+
+    fetch('../controllers/EquipmentController.php', {
+      method: 'POST', body: fd
+    })
+    .then(r=>r.json())
+    .then(res=>{
+      if(res.status==='success'){
+        closeModal();
+        fetchEquipment();
+      } else {
+        alert('Ошибка: '+(res.message||'неизвестная'));
+      }
+    })
+    .catch(err=>alert('Сетевая ошибка: '+err));
+  }
+
+  // Удаление
+  function deleteEquipment(id) {
+    if(!confirm('Удалить оборудование?')) return;
+    const fd = new FormData();
+    fd.set('action','destroy');
+    fd.set('id',id);
+    fetch('../controllers/EquipmentController.php',{
+      method:'POST', body:fd
+    })
+    .then(()=>fetchEquipment());
+  }
 </script>
 </body>
 </html>

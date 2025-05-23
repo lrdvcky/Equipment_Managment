@@ -12,7 +12,8 @@ class EquipmentContext {
             r.name AS room_name,
             u1.last_name AS resp_last, u1.first_name AS resp_first, u1.middle_name AS resp_middle,
             u2.last_name AS temp_last, u2.first_name AS temp_first, u2.middle_name AS temp_middle,
-            m.name AS model_name
+            m.name AS model_name,
+            e.inventory_section
           FROM `Equipment` e
           LEFT JOIN `Room` r ON e.room_id = r.id
           LEFT JOIN `User` u1 ON e.responsible_user_id = u1.id
@@ -50,7 +51,8 @@ class EquipmentContext {
                 $row['comment'],
                 $row['direction_name'],
                 $row['status'],
-                $row['equipment_type'] ?? null
+                $row['equipment_type'] ?? null,
+                $row['inventory_section'] ?? null
             );
         }
 
@@ -61,11 +63,20 @@ class EquipmentContext {
         $conn = OpenConnection();
         $stmt = $conn->prepare("
             INSERT INTO Equipment (
-                name, inventory_number, room_id,
-                responsible_user_id, temporary_responsible_user_id,
-                price, model_id, direction_name,
-                status, comment, equipment_type, photo
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                name,
+                inventory_number,
+                room_id,
+                responsible_user_id,
+                temporary_responsible_user_id,
+                price,
+                model_id,
+                direction_name,
+                status,
+                comment,
+                equipment_type,
+                photo,
+                inventory_section
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
 
         $stmt->execute([
@@ -80,20 +91,30 @@ class EquipmentContext {
             $data['status'],
             $data['comment'],
             $data['equipment_type'],
-            $data['photo']
+            $data['photo'],
+            $data['inventory_section']
         ]);
 
         return (int)$conn->lastInsertId();
     }
 
     public static function update(int $id, array $data): void {
-        $conn = OpenConnection(); // ✅ исправлено
+        $conn = OpenConnection();
         $stmt = $conn->prepare("
             UPDATE Equipment SET 
-                name=?, inventory_number=?, room_id=?, responsible_user_id=?, 
-                temporary_responsible_user_id=?, price=?, model_id=?, 
-                direction_name=?, status=?, comment=?, equipment_type=?
-            WHERE id=?
+                name                       = ?,
+                inventory_number           = ?,
+                room_id                    = ?,
+                responsible_user_id        = ?,
+                temporary_responsible_user_id = ?,
+                price                      = ?,
+                model_id                   = ?,
+                direction_name             = ?,
+                status                     = ?,
+                comment                    = ?,
+                equipment_type             = ?,
+                inventory_section          = ?
+            WHERE id = ?
         ");
 
         $stmt->execute([
@@ -108,6 +129,7 @@ class EquipmentContext {
             $data['status'],
             $data['comment'],
             $data['equipment_type'],
+            $data['inventory_section'],
             $id
         ]);
     }

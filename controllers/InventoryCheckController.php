@@ -4,7 +4,7 @@ ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/../models/InventorycheckContext.php';
-require_once __DIR__ . '/../models/inventorycheck.php';
+require_once __DIR__ . '/../models/Inventorycheck.php';
 require_once __DIR__ . '/../models/EquipmentInventoryCheckContext.php';
 require_once __DIR__ . '/../models/EquipmentInventoryCheck.php';
 
@@ -16,26 +16,23 @@ try {
     switch ($action) {
         case 'getChecks':
             $items = InventoryCheckContext::getAll();
-            $out = array_map(function($i) {
-                return [
-                    'id'         => $i->id,
-                    'name'       => $i->name,
-                    'start_date' => $i->start_date,
-                    'end_date'   => $i->end_date,
-                ];
-            }, $items);
+            $out = array_map(fn($i) => [
+                'id'         => $i->id,
+                'name'       => $i->name,
+                'start_date' => $i->start_date,
+                'end_date'   => $i->end_date,
+            ], $items);
             echo json_encode($out, JSON_UNESCAPED_UNICODE);
             exit;
 
         case 'getResults':
-    if (empty($_GET['id']) || !ctype_digit($_GET['id'])) {
-        throw new Exception('Missing or invalid id');
-    }
-    $checkId = (int)$_GET['id'];
-    // теперь метод точно существует
-    $records = EquipmentInventoryCheckContext::getByCheckId($checkId);
-    echo json_encode($records, JSON_UNESCAPED_UNICODE);
-    exit;
+            if (empty($_GET['id']) || !ctype_digit($_GET['id'])) {
+                throw new Exception('Missing or invalid id');
+            }
+            $checkId = (int)$_GET['id'];
+            $records = EquipmentInventoryCheckContext::getByCheckId($checkId);
+            echo json_encode($records, JSON_UNESCAPED_UNICODE);
+            exit;
 
         case 'addCheck':
             $name = trim($_GET['name'] ?? '');

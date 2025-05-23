@@ -24,7 +24,7 @@ if ($method === 'POST') {
                 break;
 
             case 'update':
-                $id = (int)($_POST['id'] ?? 0);
+                $id   = (int)($_POST['id'] ?? 0);
                 $data = parseRequest($allowNoPhoto = true);
                 EquipmentContext::update($id, $data);
                 echo json_encode(['status' => 'success'], JSON_UNESCAPED_UNICODE);
@@ -60,12 +60,19 @@ exit;
  */
 function parseRequest(bool $allowNoPhoto = false): array {
     $fields = [
-  'name', 'inventory_number', 'room_id',
-  'responsible_user_id', 'temporary_responsible_user_id',
-  'price', 'model_id', 'direction_name',
-  'status', 'comment', 'equipment_type' // ← добавлено
-];
-
+        'name',
+        'inventory_number',
+        'room_id',
+        'responsible_user_id',
+        'temporary_responsible_user_id',
+        'price',
+        'model_id',
+        'direction_name',
+        'status',
+        'comment',
+        'equipment_type',
+        'inventory_section'   // ← добавлено поле
+    ];
 
     $data = [];
     foreach ($fields as $f) {
@@ -75,8 +82,11 @@ function parseRequest(bool $allowNoPhoto = false): array {
     }
 
     // 🔒 Валидация inventory_number: только цифры от 1 до 999
-    if (!isset($data['inventory_number']) || !ctype_digit($data['inventory_number']) || 
-        (int)$data['inventory_number'] < 1 || (int)$data['inventory_number'] > 999) {
+    if (!isset($data['inventory_number'])
+        || !ctype_digit((string)$data['inventory_number'])
+        || (int)$data['inventory_number'] < 1
+        || (int)$data['inventory_number'] > 999
+    ) {
         throw new Exception('Инвентарный номер должен быть целым числом от 1 до 999.');
     }
 
@@ -89,4 +99,3 @@ function parseRequest(bool $allowNoPhoto = false): array {
 
     return $data;
 }
-

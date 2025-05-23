@@ -16,27 +16,30 @@ class Equipment {
     public ?string $comment;
     public ?string $direction_name;
     public ?string $status;
+    public ?string $equipment_type;
 
-    public ?string $equipment_type; // ✅ новое поле
+    // ✅ Новое свойство для раздела
+    public ?string $inventory_section;
 
     public function __construct(
-        int    $id,
-        string $name,
+        int     $id,
+        string  $name,
         ?string $photo,
-        string $inventory_number,
-        ?int   $room_id,
+        string  $inventory_number,
+        ?int    $room_id,
         ?string $room_name,
-        ?int   $responsible_user_id,
+        ?int    $responsible_user_id,
         ?string $responsible_user_name,
-        ?int   $temporary_responsible_user_id,
+        ?int    $temporary_responsible_user_id,
         ?string $temporary_responsible_user_name,
-        ?float $price,
-        ?int   $model_id,
+        ?float  $price,
+        ?int    $model_id,
         ?string $model_name,
         ?string $comment,
         ?string $direction_name,
         ?string $status,
-        ?string $equipment_type // ✅ добавляем в конструктор
+        ?string $equipment_type,
+        ?string $inventory_section   // ✅ параметр в конце
     ) {
         $this->id                            = $id;
         $this->name                          = $name;
@@ -54,7 +57,7 @@ class Equipment {
         $this->comment                       = $comment;
         $this->direction_name                = $direction_name;
         $this->status                        = $status;
-        $this->equipment_type                = $equipment_type; // ✅ присваиваем
+        $this->equipment_type                = $equipment_type;
+        $this->inventory_section             = $inventory_section; // ✅ присваиваем
     }
 }
-?>
