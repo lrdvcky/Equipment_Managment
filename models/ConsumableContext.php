@@ -26,23 +26,31 @@ class ConsumableContext {
 
     /** Создать новый расходник */
     public static function add(Consumable $c): bool {
-        $pdo = OpenConnection();
-        $stmt = $pdo->prepare(
-            "INSERT INTO `Consumable` \
-            (name, description, arrival_date, image, quantity, responsible_user_id, temporary_responsible_user_id, consumable_type_id) \
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-        );
-        return $stmt->execute([
-            $c->name,
-            $c->description,
-            $c->arrival_date,
-            $c->image,
-            $c->quantity,
-            $c->responsible_user_id,
-            $c->temporary_responsible_user_id,
-            $c->consumable_type_id
-        ]);
-    }
+    $pdo = OpenConnection();
+    $sql = "
+        INSERT INTO `Consumable` (
+            `name`,
+            `description`,
+            `arrival_date`,
+            `image`,
+            `quantity`,
+            `responsible_user_id`,
+            `temporary_responsible_user_id`,
+            `consumable_type_id`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    ";
+    $stmt = $pdo->prepare($sql);
+    return $stmt->execute([
+        $c->name,
+        $c->description,
+        $c->arrival_date,
+        $c->image,
+        $c->quantity,
+        $c->responsible_user_id,
+        $c->temporary_responsible_user_id,
+        $c->consumable_type_id
+    ]);
+}
 
     /** Обновить существующий расходник */
     public static function update(Consumable $c): bool {
