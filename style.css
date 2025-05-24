@@ -196,7 +196,6 @@ footer {
     overflow-x: auto;
     width: 100%;
 }
-
 .equipment-table table,
 .user-table table {
     width: 100%;
@@ -219,11 +218,16 @@ main {
     cursor: pointer;
 }
 @media screen and (min-width: 720px) and (max-width: 1200px) {
-    
+    .red-button {
+        margin-bottom: 20px;
+    }
     .header-content {
         flex-direction: column;
         gap: 10px;
         text-align: center;
+    }
+    .red-button {
+        margin-bottom: 20px;
     }
 
     nav {
