@@ -80,4 +80,18 @@ class EquipmentContext {
     public static function delete(int $id): void {
         OpenConnection()->prepare('DELETE FROM Equipment WHERE id=?')->execute([$id]);
     }
+    /**
+     * Проверяет, есть ли оборудование с таким инвентарным номером
+     * @param int $inv
+     * @return bool
+     */
+    public static function existsInventoryNumber(int $inv): bool
+    {
+        $conn = OpenConnection();
+        $stmt = $conn->prepare(
+            'SELECT COUNT(*) FROM Equipment WHERE inventory_number = ?'
+        );
+        $stmt->execute([$inv]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
 }
