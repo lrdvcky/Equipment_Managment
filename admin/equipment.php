@@ -449,14 +449,28 @@ session_start();
 
   // Удаление
   function deleteEquipment(id) {
-    if(!confirm('Удалить оборудование?')) return;
-    const fd = new FormData();
-    fd.set('action','destroy');
-    fd.set('id',id);
-    fetch('../controllers/EquipmentController.php',{
-      method:'POST', body:fd
-    }).then(_=>fetchEquipment());
-  }
+  if (!confirm('Удалить оборудование?')) return;
+
+  const fd = new FormData();
+  fd.append('action', 'destroy');   // ‼ одинаково со switch-веткой в контроллере
+  fd.append('id', id);
+
+  fetch('../controllers/EquipmentController.php', {
+    method: 'POST',
+    body:   fd,
+    credentials: 'same-origin'      // чтобы PHP точно получил сессию
+  })
+  .then(r => r.json())              // читаем ответ, даже если это ошибка
+  .then(res => {
+      if (res.status === 'success') {
+        fetchEquipment();           // перечитать список
+      } else {
+        alert('Не удалось удалить: ' + (res.message || 'неизвестная ошибка'));
+      }
+  })
+  .catch(err => alert('Сетевая ошибка: ' + err));
+}
+
   function openImportModal(){
   document.getElementById('import-result').textContent = '';
   document.getElementById('import-file').value = '';

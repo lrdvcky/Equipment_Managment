@@ -253,11 +253,22 @@ session_start();
   }
 
   async function deleteConsumable(id) {
-    if (!confirm('Удалить расходник?')) return;
-    const fd=new FormData(); fd.set('action','destroy'); fd.set('id',id);
-    await fetch(API,{method:'POST',body:fd});
-    fetchConsumables();
-  }
+  if (!confirm('Удалить расходник?')) return;
+
+  const fd = new FormData();
+  fd.append('action', 'delete');   //  ←  слово как в контроллере
+  fd.append('id', id);
+
+  const res = await fetch(API, {
+    method: 'POST',
+    body:   fd,
+    credentials: 'same-origin'
+  });
+  const j = await res.json();
+  if (j.status === 'success') fetchConsumables();
+  else alert('Не удалось удалить: ' + (j.message || res.statusText));
+}
+
 
   async function loadHistory(id,row) {
     document.querySelectorAll('tr').forEach(r=>r.classList.remove('selected'));
