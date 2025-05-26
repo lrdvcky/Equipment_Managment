@@ -1,21 +1,24 @@
 <?php
+// models/UsersContext.php
+
 require_once __DIR__ . '/../connection.php';
 require_once __DIR__ . '/User.php';
 
 class UsersContext {
+
     /**
      * Возвращает массив User
+     * @return User[]
      */
-    public static function getAllUsers(): array {
+    public static function getAllUsers() {
         $users = [];
         $conn = OpenConnection();
-        $sql  = "SELECT * FROM `User`";
-        $stmt = $conn->query($sql);
+        $stmt = $conn->query("SELECT * FROM `User` ORDER BY last_name, first_name");
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $users[] = new User(
                 $row['id'],
                 $row['username'],
-                $row['password'],  // теперь в открытом виде
+                $row['password'],
                 $row['role'],
                 $row['email'],
                 $row['last_name'],
@@ -29,21 +32,46 @@ class UsersContext {
     }
 
     /**
-     * Удаляет пользователя по ID
+     * Возвращает полное ФИО пользователя по его id
+     * @param int $id
+     * @return string
      */
-    public static function deleteUser(int $id): void {
+    public static function getFullNameById($id) {
+        $conn = OpenConnection();
+        $stmt = $conn->prepare("
+            SELECT last_name, first_name, middle_name
+            FROM `User`
+            WHERE id = ?
+        ");
+        $stmt->execute([$id]);
+        $r = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$r) {
+            return '';
+        }
+        $name = $r['last_name'] . ' ' . $r['first_name'];
+        if (!empty($r['middle_name'])) {
+            $name .= ' ' . $r['middle_name'];
+        }
+        return trim($name);
+    }
+
+    /**
+     * Удаляет пользователя по ID
+     * @param int $id
+     */
+    public static function deleteUser($id) {
         $conn = OpenConnection();
         $stmt = $conn->prepare("DELETE FROM `User` WHERE id = ?");
         $stmt->execute([$id]);
     }
 
     /**
-     * Создаёт нового пользователя (пароль сохраняется в открытом виде).
-     * @return int — новый ID
-     * @throws Exception — если роль неверна
+     * Создаёт нового пользователя (пароль храним в открытом виде)
+     * @param array $data
+     * @return int новый ID
+     * @throws Exception если роль неверна
      */
-    public static function createUser(array $data): int {
-        // --- 1. Маппинг и валидация роли ---
+    public static function createUser($data) {
         $map = [
             'Администратор'      => 'admin',
             'Ответственное лицо' => 'teacher',
@@ -58,7 +86,6 @@ class UsersContext {
         }
         $role = $map[$rawRole];
 
-        // --- 2. Вставка в БД (пароль не хешируем) ---
         $conn = OpenConnection();
         $stmt = $conn->prepare("
             INSERT INTO `User`
@@ -67,7 +94,7 @@ class UsersContext {
         ");
         $stmt->execute([
             $data['username'],
-            $data['password'],      // СЫРОЙ пароль
+            $data['password'],
             $role,
             $data['email']       ?? null,
             $data['last_name'],
@@ -76,17 +103,16 @@ class UsersContext {
             $data['phone']       ?? null,
             $data['address']     ?? null
         ]);
-
-        return (int)$conn->lastInsertId();
+        return $conn->lastInsertId();
     }
 
     /**
-     * Обновляет данные пользователя.
-     * Если передан непустой пароль — обновляет его (также без хеширования).
-     * @throws Exception — если роль неверна
+     * Обновляет данные пользователя
+     * @param int   $id
+     * @param array $data
+     * @throws Exception если роль неверна
      */
-    public static function updateUser(int $id, array $data): void {
-        // --- 1. Маппинг роли ---
+    public static function updateUser($id, $data) {
         $map = [
             'Администратор'      => 'admin',
             'Ответственное лицо' => 'teacher',
@@ -101,7 +127,6 @@ class UsersContext {
         }
         $role = $map[$rawRole];
 
-        // --- 2. Построение SQL ---
         $conn   = OpenConnection();
         $fields = [];
         $params = [];
@@ -110,10 +135,10 @@ class UsersContext {
         $fields[] = "username = ?";
         $params[] = $data['username'];
 
-        // пароль (если передан непустой)
+        // пароль (если передан)
         if (!empty($data['password'])) {
             $fields[] = "password = ?";
-            $params[] = $data['password'];  // СЫРОЙ пароль
+            $params[] = $data['password'];
         }
 
         // роль
@@ -134,7 +159,7 @@ class UsersContext {
         $fields[] = "address = ?";
         $params[] = $data['address']     ?? null;
 
-        // ID
+        // условие WHERE
         $params[] = $id;
         $sql = "UPDATE `User` SET " . implode(", ", $fields) . " WHERE id = ?";
         $stmt = $conn->prepare($sql);
