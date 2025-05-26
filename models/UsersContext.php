@@ -165,4 +165,15 @@ class UsersContext {
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
     }
+    /** @return User|null */
+public static function findByUsername(string $login) {
+  $conn = OpenConnection();
+  $stmt = $conn->prepare("SELECT * FROM `User` WHERE username = ?");
+  $stmt->execute([$login]);
+  $r = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $r
+    ? new User($r['id'],$r['username'],$r['password'],$r['role'],$r['email'],$r['last_name'],$r['first_name'],$r['middle_name'],$r['phone'],$r['address'])
+    : null;
+}
+
 }

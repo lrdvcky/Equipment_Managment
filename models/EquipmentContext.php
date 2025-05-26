@@ -169,4 +169,15 @@ class EquipmentContext {
         $stmt = $conn->prepare("DELETE FROM `Equipment` WHERE id = ?");
         $stmt->execute([$id]);
     }
+    /**
+     * Проверить, есть ли в БД запись с таким inventory_number
+     * @param int $inv
+     * @return bool
+     */
+    public static function existsInventoryNumber(int $inv): bool {
+        $conn = OpenConnection();
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM `Equipment` WHERE inventory_number = ?");
+        $stmt->execute([$inv]);
+        return (int)$stmt->fetchColumn() > 0;
+    }
 }

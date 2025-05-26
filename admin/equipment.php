@@ -138,6 +138,10 @@ session_start();
     <div class="equipment-controls">
       <input type="text" id="search" placeholder="Поиск по названию…" oninput="filterEquipment()">
       <button class="red-button" onclick="openAddModal()">Добавить оборудование</button>
+      <!-- Внутри <div class="equipment-controls"> -->
+<button class="red-button" onclick="openImportModal()">Импорт из XLSX</button>
+
+
     </div>
 
     <div class="equipment-table">
@@ -453,6 +457,45 @@ session_start();
       method:'POST', body:fd
     }).then(_=>fetchEquipment());
   }
+  function openImportModal(){
+  document.getElementById('import-result').textContent = '';
+  document.getElementById('import-file').value = '';
+  document.getElementById('import-modal').style.display = 'flex';
+}
+function closeImportModal(){
+  document.getElementById('import-modal').style.display = 'none';
+}
+function doImport(){
+  const f = document.getElementById('import-file');
+  if (!f.files.length) return alert('Выберите файл .xlsx');
+  const fd = new FormData();
+  fd.append('import', f.files[0]);
+  fetch('../controllers/EquipmentImportController.php', {
+    method:'POST', body:fd
+  })
+  .then(r=>r.text().then(t=>{
+    document.getElementById('import-result').textContent = `HTTP/${r.status} ${r.statusText}\n\n` + t;
+    if (r.ok) fetchEquipment();
+  }))
+  .catch(e=>{
+    document.getElementById('import-result').textContent = 'Сетевая ошибка: '+e;
+  });
+}
+
+
 </script>
+<!-- В самый низ, перед </body>, добавьте: -->
+<!-- Модальное окно импорта -->
+<div id="import-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="closeImportModal()">&times;</span>
+    <h3>Импорт из Excel (XLSX)</h3>
+    <input type="file" id="import-file" accept=".xlsx">
+    <button onclick="doImport()">Импортировать</button>
+    <pre id="import-result" style="white-space:pre-wrap;color:#c00;"></pre>
+  </div>
+</div>
+
+
 </body>
 </html>

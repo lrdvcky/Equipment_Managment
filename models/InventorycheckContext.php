@@ -52,4 +52,15 @@ class InventoryCheckContext {
         $stmt = $conn->prepare("DELETE FROM InventoryCheck WHERE id = ?");
         $stmt->execute([$id]);
     }
+    /** @return InventoryCheck|null */
+public static function findByName(string $name) {
+  $conn = OpenConnection();
+  $stmt = $conn->prepare("SELECT * FROM `InventoryCheck` WHERE name = ?");
+  $stmt->execute([$name]);
+  $r = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $r
+    ? new InventoryCheck($r['id'],$r['name'],$r['start_date'],$r['end_date'])
+    : null;
+}
+
 }

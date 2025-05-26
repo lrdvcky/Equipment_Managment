@@ -59,4 +59,15 @@ class RoomContext {
             throw $e;
         }
     }
+    /** @return Room|null */
+public static function findByName(string $name) {
+  $db = OpenConnection();
+  $stmt = $db->prepare("SELECT * FROM `Room` WHERE name = ?");
+  $stmt->execute([$name]);
+  $r = $stmt->fetch(PDO::FETCH_ASSOC);
+  return $r
+    ? new Room($r['id'],$r['name'],$r['short_name'],$r['responsible_user_id'],$r['temporary_responsible_user_id'])
+    : null;
+}
+
 }
